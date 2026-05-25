@@ -9,23 +9,23 @@
 
 ## Phase 1 — Project Setup & Foundation
 
-- [ ] Initialize Python project structure
-- [ ] Set up virtual environment
-- [ ] Install dependencies: `customtkinter`, `pyinstaller`
-- [ ] Create SQLite database file on first run
+- [x] Initialize Python project structure
+- [x] Set up virtual environment
+- [x] Install dependencies: `customtkinter`, `pyinstaller`
+- [x] Create SQLite database file on first run
 - [ ] Implement DB schema (all tables below)
 - [ ] Write data access layer (CRUD functions for all entities)
 - [ ] Set up GitHub repository
 - [ ] Add GitHub Actions workflow for Windows .exe build
 
 ### DB Schema
-- [ ] `students` — id, name
-- [ ] `school_years` — id, label (e.g. "2024/25")
-- [ ] `courses` — id, name
-- [ ] `enrollments` — id, student_id, course_id, class, school_year_id
-- [ ] `course_configs` — id, class, course_id, school_year_id, weight_exams, weight_oral, weight_homework, weight_quizzes
-- [ ] `weight_overrides` — id, enrollment_id, weight_exams, weight_oral, weight_homework, weight_quizzes
-- [ ] `grades` — id, enrollment_id, category (enum: exams/oral/homework/quizzes), value, date
+- [x] `students` — id, name
+- [x] `school_years` — id, label (e.g. "2024/25")
+- [x] `courses` — id, name
+- [x] `enrollments` — id, student_id, course_id, class, school_year_id
+- [x] `course_configs` — id, class, course_id, school_year_id, weight_exams, weight_oral, weight_homework, weight_quizzes
+- [x] `weight_overrides` — id, enrollment_id, weight_exams, weight_oral, weight_homework, weight_quizzes
+- [x] `grades` — id, enrollment_id, category (enum: exams/oral/homework/quizzes), value, date
 
 ---
 
