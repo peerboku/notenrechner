@@ -13,10 +13,10 @@
 - [x] Set up virtual environment
 - [x] Install dependencies: `customtkinter`, `pyinstaller`
 - [x] Create SQLite database file on first run
-- [ ] Implement DB schema (all tables below)
-- [ ] Write data access layer (CRUD functions for all entities)
-- [ ] Set up GitHub repository
-- [ ] Add GitHub Actions workflow for Windows .exe build
+- [x] Implement DB schema (all tables below)
+- [x] Write data access layer (CRUD functions for all entities)
+- [x] Set up GitHub repository
+- [x] Add GitHub Actions workflow for Windows .exe build
 
 ### DB Schema
 - [x] `students` — id, name
