@@ -94,7 +94,8 @@ class App(ctk.CTk):
         self._switch(CourseConfigFrame, "Kurskonfiguration")
 
     def show_grade_entry(self):
-        self._placeholder("Noten eingeben")
+        from ui.grade_entry import GradeEntryFrame
+        self._switch(GradeEntryFrame, "Noten eingeben")
 
 
 def main():
