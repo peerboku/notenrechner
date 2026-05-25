@@ -11,16 +11,19 @@ This is an early preview release for testing purposes. Not all features are avai
 **What works in this version:**
 
 - Add, rename, and delete students
-- Assign students to courses, classes, and school years (enrollments)
-- The database and full calculation engine are built and ready in the background
+- Assign students to courses, classes, and school years
+- Set category weights per course — with an optional per-student override and reason note
+- Enter grades per category, with live category averages
+- Input validation: homework and quiz grades are locked to 1, 3, or 5
 
-**Not yet available (coming in the next releases):**
+**Not yet available (coming in a future release):**
 
-- Setting category weights per course (Course Config)
-- Entering individual grades (Grade Entry)
-- Viewing calculated averages and final grades (Student Detail, Dashboard)
+- Overview of all students with final grades (Dashboard)
+- Full grade breakdown per student across all courses (Student Detail)
 
-The sections below describe the full app as it will work when complete. Steps and screens that are not yet available are noted.
+**Note:** The next release will also include a reworked interface. The current version was tested internally and found to require too many steps for comfortable daily use. The workflow will be simplified before the app is ready for regular use.
+
+The sections below describe the full app as it will work when complete.
 
 ---
 
@@ -79,15 +82,15 @@ Go to **Schüler** in the sidebar. Enter each student's name and add them. Stude
 ### Step 2: Create enrollments ✅ Available now
 For each student, click **+ Einschreibung**. Assign them to a course, a class (e.g. "4B"), and a school year (e.g. "2024/25"). This connects the student to a specific course for a specific year.
 
-### Step 3: Set weights *(coming soon)*
+### Step 3: Set weights ✅ Available now
 Go to **Kurskonfiguration**. Select a class, course, and school year. Set the percentage weight for each of the four categories. The weights must add up to 100%.
 
 If a category does not apply to a course, set its weight to 0% — it will be ignored in the calculation.
 
-You can also set different weights for an individual student if needed — this overrides the default for that student only.
+You can also set different weights for an individual student if needed — this overrides the default for that student only. An optional note field lets you record the reason (e.g. "Legasthenie-Ausgleich").
 
-### Step 4: Enter grades *(coming soon)*
-Go to **Noten eingeben**. Select a student and their enrollment. Add individual grades for each category as they come in throughout the year.
+### Step 4: Enter grades ✅ Available now
+Go to **Noten eingeben**. Select a student and their enrollment. Add individual grades for each category as they come in throughout the year. Each panel shows the live category average, colour-coded green (pass) or red (fail).
 
 ### Step 5: View results *(coming soon)*
 The **Dashboard** gives an overview of an entire class or course. Click any student to see a full breakdown: all category averages, the final grade, and every individual entry.
@@ -99,8 +102,8 @@ The **Dashboard** gives an overview of an entire class or course. Click any stud
 | Screen | Purpose | Status |
 |---|---|---|
 | Schüler | Add students and manage course enrollments | ✅ Available |
-| Kurskonfiguration | Set category weights per class and course | Coming soon |
-| Noten eingeben | Add and edit individual grades | Coming soon |
+| Kurskonfiguration | Set category weights per class and course | ✅ Available |
+| Noten eingeben | Add and edit individual grades | ✅ Available |
 | Dashboard | Overview of all students with final grades | Coming soon |
 | Schüler-Detail | Full grade breakdown for one student | Coming soon |
 
