@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS courses (
 
 CREATE TABLE IF NOT EXISTS enrollments (
     id             INTEGER PRIMARY KEY AUTOINCREMENT,
-    student_id     INTEGER NOT NULL REFERENCES students(id),
+    student_id     INTEGER NOT NULL REFERENCES students(id) ON DELETE CASCADE,
     course_id      INTEGER NOT NULL REFERENCES courses(id),
     school_year_id INTEGER NOT NULL REFERENCES school_years(id),
     class          TEXT NOT NULL,
@@ -39,7 +39,7 @@ CREATE TABLE IF NOT EXISTS course_configs (
 
 CREATE TABLE IF NOT EXISTS weight_overrides (
     id             INTEGER PRIMARY KEY AUTOINCREMENT,
-    enrollment_id  INTEGER NOT NULL UNIQUE REFERENCES enrollments(id),
+    enrollment_id  INTEGER NOT NULL UNIQUE REFERENCES enrollments(id) ON DELETE CASCADE,
     weight_exams   REAL NOT NULL,
     weight_oral    REAL NOT NULL,
     weight_homework REAL NOT NULL,
@@ -48,7 +48,7 @@ CREATE TABLE IF NOT EXISTS weight_overrides (
 
 CREATE TABLE IF NOT EXISTS grades (
     id            INTEGER PRIMARY KEY AUTOINCREMENT,
-    enrollment_id INTEGER NOT NULL REFERENCES enrollments(id),
+    enrollment_id INTEGER NOT NULL REFERENCES enrollments(id) ON DELETE CASCADE,
     category      TEXT NOT NULL,
     value         REAL NOT NULL,
     date          TEXT NOT NULL
