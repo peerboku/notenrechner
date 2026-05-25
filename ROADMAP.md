@@ -35,7 +35,7 @@
 - [x] Category average: oral (mean of 1–5 grades)
 - [x] Category average: homework (mean of {1,3,5} grades)
 - [x] Category average: quizzes (mean of {1,3,5} grades)
-- [x] Weighted final grade (inherits CourseConfig, overridden by weight_override if exists)
+- [x] Weighted final grade (inherits CourseConfig, overridden by weight_override if exist3s)
 - [x] Final grade rounding to 1 decimal
 - [ ] Pass/fail logic: ≤ 4.0 pass, > 4.0 fail
 - [x] Weight validation: sum must equal 100%

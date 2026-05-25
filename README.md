@@ -1,14 +1,34 @@
-# Grade Calculator — Teacher Guide
+# Notenrechner — Teacher Guide
 
 A desktop app for managing and calculating student grades. All data is stored locally on your computer. No internet connection required.
 
 ---
 
+## Current Version (v0.3.1 — Early Preview)
+
+This is an early preview release for testing purposes. Not all features are available yet.
+
+**What works in this version:**
+
+- Add, rename, and delete students
+- Assign students to courses, classes, and school years (enrollments)
+- The database and full calculation engine are built and ready in the background
+
+**Not yet available (coming in the next releases):**
+
+- Setting category weights per course (Course Config)
+- Entering individual grades (Grade Entry)
+- Viewing calculated averages and final grades (Student Detail, Dashboard)
+
+The sections below describe the full app as it will work when complete. Steps and screens that are not yet available are noted.
+
+---
+
 ## Installation
 
-1. Download the file `Notenrechner.exe`
+1. Download `Notenrechner.exe` from the [Releases page](https://github.com/peerboku/notenrechner/releases) (or on the right side of this page)
 2. Double-click to open — no installation needed
-3. The app creates a database file (`grades.db`) in the same folder on first run. Do not delete this file — it contains all your data.
+3. On first run the app creates a file called `grades.db` in the same folder. Do not delete this file — it contains all your data.
 
 ---
 
@@ -46,57 +66,55 @@ Grades use the Austrian scale: **1 is the best, 5 is the worst. Grade 4 is the l
 
 ## Input Rules
 
-- Exams and Oral grades: any grade from 1 to 5
+- Exams and Oral grades: any value from 1 to 5
 - Homework and Quizzes: only 1 (good), 3 (okay), or 5 (bad)
 
 ---
 
 ## Getting Started — Step by Step
 
-### Step 1: Add your students
-Go to **Student Management**. Enter each student's name and add them. Students are stored globally — you only add them once, even if they appear in multiple courses.
+### Step 1: Add your students ✅ Available now
+Go to **Schüler** in the sidebar. Enter each student's name and add them. Students are stored globally — you only add them once, even if they appear in multiple courses.
 
-### Step 2: Create enrollments
-For each student, create an enrollment: assign them to a course, a class (e.g. "4B"), and a school year (e.g. "2024/25"). This connects the student to a specific course for a specific year.
+### Step 2: Create enrollments ✅ Available now
+For each student, click **+ Einschreibung**. Assign them to a course, a class (e.g. "4B"), and a school year (e.g. "2024/25"). This connects the student to a specific course for a specific year.
 
-### Step 3: Set weights
-Go to **Course Config**. Select a class, course, and school year. Set the percentage weight for each category. The four weights must add up to 100%.
+### Step 3: Set weights *(coming soon)*
+Go to **Kurskonfiguration**. Select a class, course, and school year. Set the percentage weight for each of the four categories. The weights must add up to 100%.
 
-If a category does not apply to a course, set its weight to 0%. It will be ignored in the calculation.
+If a category does not apply to a course, set its weight to 0% — it will be ignored in the calculation.
 
 You can also set different weights for an individual student if needed — this overrides the default for that student only.
 
-### Step 4: Enter grades
-Go to **Grade Entry**. Select a student and their enrollment. Add individual grades for each category as they come in throughout the year. The category average and final grade update automatically.
+### Step 4: Enter grades *(coming soon)*
+Go to **Noten eingeben**. Select a student and their enrollment. Add individual grades for each category as they come in throughout the year.
 
-### Step 5: View results
-Go to **Student Detail** to see a full breakdown for any student: all courses, all category averages, the final grade, and every individual entry.
-
-Use the **Dashboard** to get an overview of an entire class or course at once.
+### Step 5: View results *(coming soon)*
+The **Dashboard** gives an overview of an entire class or course. Click any student to see a full breakdown: all category averages, the final grade, and every individual entry.
 
 ---
 
 ## Screens Overview
 
-| Screen | Purpose |
-|---|---|
-| Dashboard | Overview of all students, filter by year / class / course |
-| Student Detail | Full grade breakdown for one student |
-| Grade Entry | Add and edit individual grades |
-| Course Config | Set category weights per class and course |
-| Student Management | Add students and manage course enrollments |
+| Screen | Purpose | Status |
+|---|---|---|
+| Schüler | Add students and manage course enrollments | ✅ Available |
+| Kurskonfiguration | Set category weights per class and course | Coming soon |
+| Noten eingeben | Add and edit individual grades | Coming soon |
+| Dashboard | Overview of all students with final grades | Coming soon |
+| Schüler-Detail | Full grade breakdown for one student | Coming soon |
 
 ---
 
 ## School Year and Class
 
-When a new school year begins, create a new school year (e.g. "2025/26") and create new enrollments for your students with their new class label. Previous years remain stored and viewable — nothing is overwritten.
+When a new school year begins, create a new school year (e.g. "2025/26") and add new enrollments for your students with their new class label. Previous years stay stored and viewable — nothing is overwritten.
 
 ---
 
 ## Your Data
 
-All data is saved in a file called `grades.db` in the same folder as the app. 
+All data is saved in a file called `grades.db` in the same folder as the app.
 
 - Do not delete this file
 - To back up your data, copy this file to a safe location (USB drive, cloud storage)
