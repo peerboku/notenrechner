@@ -14,58 +14,13 @@ class MainMenu(tk.Frame):
     def _build(self) -> None:
         header = tk.Frame(self, pady=30)
         header.pack(fill=tk.X)
-        tk.Label(header, text="Menü",
+        tk.Label(header, text="Hauptmenü",
                  font=("Helvetica", 28, "bold")).pack()
         tk.Label(header, text="Karteikarten für die Prüfungsvorbereitung",
                  font=("Helvetica", 12), fg="#aaaaaa").pack()
 
         ttk.Separator(self, orient=tk.HORIZONTAL).pack(fill=tk.X, padx=40)
 
-        self._subjects = self._scan_subjects()
-
-        if not self._subjects:
-            tk.Label(
-                self,
-                text="Kein Fach gefunden. Bitte .json-Datei in data/ anlegen.",
-                font=("Helvetica", 13), fg="#aaaaaa",
-            ).pack(pady=50)
-            return
-
-        # Subject listbox
-        sel = tk.Frame(self, pady=20)
-        sel.pack()
-        tk.Label(sel, text="Fach auswählen:",
-                 font=("Helvetica", 13)).grid(row=0, column=0, padx=10, sticky=tk.NE, pady=4)
-
-        lb_frame = tk.Frame(sel)
-        lb_frame.grid(row=0, column=1, padx=10)
-
-        self._listbox = tk.Listbox(
-            lb_frame, selectmode=tk.EXTENDED,
-            font=("Helvetica", 12), width=34,
-            height=min(len(self._subjects), 6),
-            activestyle="none", cursor="hand2",
-        )
-        self._listbox.pack(side=tk.LEFT)
-        sb = ttk.Scrollbar(lb_frame, orient=tk.VERTICAL, command=self._listbox.yview)
-        self._listbox.configure(yscrollcommand=sb.set)
-        if len(self._subjects) > 6:
-            sb.pack(side=tk.LEFT, fill=tk.Y)
-
-        for s in self._subjects:
-            self._listbox.insert(tk.END, s)
-
-        # Restore previous selection
-        if self.app.last_subjects:
-            for i, s in enumerate(self._subjects):
-                if s in self.app.last_subjects:
-                    self._listbox.selection_set(i)
-        else:
-            self._listbox.selection_set(0)
-
-        tk.Label(sel, text="Strg/Cmd+Klick für mehrere Fächer",
-                 fg="#aaaaaa", font=("Helvetica", 9)).grid(
-            row=1, column=1, sticky=tk.W, padx=10)
 
         # Buttons
         btn_area = tk.Frame(self)
