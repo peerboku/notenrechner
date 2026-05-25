@@ -46,11 +46,11 @@
 ## Phase 3 — Core Screens
 
 ### Screen 1 — Student Management
-- [ ] List all students
-- [ ] Add new student (name)
-- [ ] Edit student name
-- [ ] Create enrollment (assign student to course + class + school year)
-- [ ] Edit / delete enrollment
+- [x] List all students
+- [x] Add new student (name)
+- [x] Edit student name
+- [x] Create enrollment (assign student to course + class + school year)
+- [x] Edit / delete enrollment
 
 ### Screen 2 — Course Config
 - [ ] Select class + course + school year
