@@ -6,7 +6,7 @@ def get_override(enrollment_id: int):
     return conn.execute(
         """
         SELECT id, enrollment_id, weight_exams, weight_oral,
-               weight_homework, weight_quizzes
+               weight_homework, weight_quizzes, note
         FROM weight_overrides
         WHERE enrollment_id = ?
         """,
@@ -20,20 +20,22 @@ def upsert_override(
     weight_oral: float,
     weight_homework: float,
     weight_quizzes: float,
+    note: str = "",
 ) -> None:
     conn = get_connection()
     conn.execute(
         """
         INSERT INTO weight_overrides
-            (enrollment_id, weight_exams, weight_oral, weight_homework, weight_quizzes)
-        VALUES (?, ?, ?, ?, ?)
+            (enrollment_id, weight_exams, weight_oral, weight_homework, weight_quizzes, note)
+        VALUES (?, ?, ?, ?, ?, ?)
         ON CONFLICT(enrollment_id) DO UPDATE SET
             weight_exams    = excluded.weight_exams,
             weight_oral     = excluded.weight_oral,
             weight_homework = excluded.weight_homework,
-            weight_quizzes  = excluded.weight_quizzes
+            weight_quizzes  = excluded.weight_quizzes,
+            note            = excluded.note
         """,
-        (enrollment_id, weight_exams, weight_oral, weight_homework, weight_quizzes),
+        (enrollment_id, weight_exams, weight_oral, weight_homework, weight_quizzes, note or None),
     )
     conn.commit()
 

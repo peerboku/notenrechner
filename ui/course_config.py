@@ -309,6 +309,12 @@ class CourseConfigFrame(ctk.CTkFrame):
             text_color=detail_color, font=ctk.CTkFont(size=12), anchor="w",
         ).pack(anchor="w")
 
+        if ov and ov["note"]:
+            ctk.CTkLabel(
+                info, text=f"Begründung: {ov['note']}",
+                text_color="gray", font=ctk.CTkFont(size=11, slant="italic"), anchor="w",
+            ).pack(anchor="w")
+
         btn_row = ctk.CTkFrame(row, fg_color="transparent")
         btn_row.pack(side="right", padx=10, pady=10)
 
@@ -347,6 +353,7 @@ class CourseConfigFrame(ctk.CTkFrame):
                 "oral":     ov["weight_oral"],
                 "homework": ov["weight_homework"],
                 "quizzes":  ov["weight_quizzes"],
+                "note":     ov["note"] or "",
             }
             if ov else None
         )
@@ -359,6 +366,7 @@ class CourseConfigFrame(ctk.CTkFrame):
                 dlg.result["oral"],
                 dlg.result["homework"],
                 dlg.result["quizzes"],
+                dlg.result["note"],
             )
             self._render_students(course_id, school_year_id, class_)
 
@@ -408,6 +416,14 @@ class _WeightDialog(ctk.CTkToplevel):
         self._sum_label.pack(side="left")
         ctk.CTkLabel(sum_row, text="%").pack(side="left")
 
+        ctk.CTkLabel(
+            self, text="Begründung (optional):",
+        ).pack(anchor="w", padx=24, pady=(14, 2))
+        self._note_entry = ctk.CTkEntry(self, width=280, placeholder_text="z. B. Legasthenie-Ausgleich")
+        self._note_entry.pack(padx=24, fill="x")
+        if initial.get("note"):
+            self._note_entry.insert(0, initial["note"])
+
         btns = ctk.CTkFrame(self, fg_color="transparent")
         btns.pack(padx=24, pady=20)
         self._save_btn = ctk.CTkButton(btns, text="Speichern", width=120, command=self._save)
@@ -446,6 +462,7 @@ class _WeightDialog(ctk.CTkToplevel):
             self.result = {cat: float(self._vars[cat].get()) for cat in self._vars}
         except ValueError:
             return
+        self.result["note"] = self._note_entry.get().strip()
         self.destroy()
 
     def _center(self, parent):

@@ -43,7 +43,8 @@ CREATE TABLE IF NOT EXISTS weight_overrides (
     weight_exams   REAL NOT NULL,
     weight_oral    REAL NOT NULL,
     weight_homework REAL NOT NULL,
-    weight_quizzes REAL NOT NULL
+    weight_quizzes REAL NOT NULL,
+    note           TEXT
 );
 
 CREATE TABLE IF NOT EXISTS grades (
@@ -59,4 +60,12 @@ CREATE TABLE IF NOT EXISTS grades (
 def init_db() -> None:
     conn = get_connection()
     conn.executescript(_SCHEMA)
+    _migrate(conn)
     conn.commit()
+
+
+def _migrate(conn) -> None:
+    """Add columns that were introduced after initial release."""
+    existing = {r[1] for r in conn.execute("PRAGMA table_info(weight_overrides)").fetchall()}
+    if "note" not in existing:
+        conn.execute("ALTER TABLE weight_overrides ADD COLUMN note TEXT")
