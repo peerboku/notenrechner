@@ -90,7 +90,8 @@ class App(ctk.CTk):
         self._placeholder("Dashboard")
 
     def show_course_config(self):
-        self._placeholder("Kurskonfiguration")
+        from ui.course_config import CourseConfigFrame
+        self._switch(CourseConfigFrame, "Kurskonfiguration")
 
     def show_grade_entry(self):
         self._placeholder("Noten eingeben")

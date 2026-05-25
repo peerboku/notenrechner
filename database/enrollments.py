@@ -49,6 +49,14 @@ def get_enrollments_by_filter(
     return conn.execute(query, params).fetchall()
 
 
+def get_distinct_classes() -> list[str]:
+    conn = get_connection()
+    rows = conn.execute(
+        "SELECT DISTINCT class FROM enrollments ORDER BY class"
+    ).fetchall()
+    return [r["class"] for r in rows]
+
+
 def add_enrollment(
     student_id: int, course_id: int, school_year_id: int, class_: str
 ) -> int:

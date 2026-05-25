@@ -53,10 +53,10 @@
 - [x] Edit / delete enrollment
 
 ### Screen 2 — Course Config
-- [ ] Select class + course + school year
-- [ ] Set weights for 4 categories (live validation: must sum to 100%)
-- [ ] Save as default for that class/course/year
-- [ ] Set per-student weight override on enrollment
+- [x] Select class + course + school year
+- [x] Set weights for 4 categories (live validation: must sum to 100%)
+- [x] Save as default for that class/course/year
+- [x] Set per-student weight override on enrollment
 
 ### Screen 3 — Grade Entry
 - [ ] Select enrollment (student + course + year)
