@@ -105,7 +105,8 @@ Austrian scale: **1 (best) → 5 (worst)**. Pass threshold: ≤ 4.0. Fail: > 4.0
 
 ## Current Phase
 
-[ ] Update this line as work progresses. See ROADMAP.md for full task breakdown.
+Phase 1 (DB schema + data access layer + calculation engine + GitHub Actions) complete.
+Starting Phase 3 — Core Screens (UI). See ROADMAP.md for full task breakdown.
 
 ---
 

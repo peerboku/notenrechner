@@ -31,15 +31,15 @@
 
 ## Phase 2 — Calculation Engine
 
-- [ ] Category average: exams (mean of 1–5 grades)
-- [ ] Category average: oral (mean of 1–5 grades)
-- [ ] Category average: homework (mean of {1,3,5} grades)
-- [ ] Category average: quizzes (mean of {1,3,5} grades)
-- [ ] Weighted final grade (inherits CourseConfig, overridden by weight_override if exists)
-- [ ] Final grade rounding to 1 decimal
+- [x] Category average: exams (mean of 1–5 grades)
+- [x] Category average: oral (mean of 1–5 grades)
+- [x] Category average: homework (mean of {1,3,5} grades)
+- [x] Category average: quizzes (mean of {1,3,5} grades)
+- [x] Weighted final grade (inherits CourseConfig, overridden by weight_override if exists)
+- [x] Final grade rounding to 1 decimal
 - [ ] Pass/fail logic: ≤ 4.0 pass, > 4.0 fail
-- [ ] Weight validation: sum must equal 100%
-- [ ] Handle missing category grades (weight=0 or no grades entered yet)
+- [x] Weight validation: sum must equal 100%
+- [x] Handle missing category grades (weight=0 or no grades entered yet)
 
 ---
 

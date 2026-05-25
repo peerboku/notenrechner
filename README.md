@@ -6,7 +6,7 @@ A desktop app for managing and calculating student grades. All data is stored lo
 
 ## Installation
 
-1. Download the file `GradeCalculator.exe`
+1. Download the file `Notenrechner.exe`
 2. Double-click to open — no installation needed
 3. The app creates a database file (`grades.db`) in the same folder on first run. Do not delete this file — it contains all your data.
 
@@ -100,7 +100,7 @@ All data is saved in a file called `grades.db` in the same folder as the app.
 
 - Do not delete this file
 - To back up your data, copy this file to a safe location (USB drive, cloud storage)
-- If you move the app to a new computer, copy both `GradeCalculator.exe` and `grades.db` together
+- If you move the app to a new computer, copy both `Notenrechner.exe` and `grades.db` together
 
 ---
 
