@@ -4,7 +4,7 @@ A desktop app for managing and calculating student grades. All data is stored lo
 
 ---
 
-## Current Version (v0.3.1 — Early Preview)
+## Current Version (v0.3.2 — Early Preview)
 
 This is an early preview release for testing purposes. Not all features are available yet.
 
