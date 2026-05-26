@@ -4,6 +4,13 @@ A desktop app for managing and calculating student grades. All data is stored lo
 
 ---
 
+## Installation
+
+1. Download `Notenrechner.exe` from the [Releases page](https://github.com/peerboku/notenrechner/releases)
+2. Double-click to open — no installation needed
+3. On first run the app creates a file called `grades.db` in the same folder. Do not delete this file — it contains all your data.
+
+---
 ## Current Version (v0.3.2 — Early Preview)
 
 This is an early preview release for testing purposes. Not all features are available yet.
@@ -23,15 +30,20 @@ This is an early preview release for testing purposes. Not all features are avai
 
 **Note:** The next release will also include a reworked interface. The current version was tested internally and found to require too many steps for comfortable daily use. The workflow will be simplified before the app is ready for regular use.
 
-The sections below describe the full app as it will work when complete.
+## Next Version (v0.4.0 — First Preview)
 
----
+This version introduces a fully reworked interface. The previous version was evaluated and found to require too many steps for comfortable daily use. The new interface is built around two screens and is designed to match how a teacher actually thinks about their class.
 
-## Installation
+**What works in this version:**
 
-1. Download `Notenrechner.exe` from the [Releases page](https://github.com/peerboku/notenrechner/releases) (or on the right side of this page)
-2. Double-click to open — no installation needed
-3. On first run the app creates a file called `grades.db` in the same folder. Do not delete this file — it contains all your data.
+- Create a class (class label + course + school year)
+- Set category weights with reusable presets
+- Add students to a class by name
+- Enter grades after a class event (e.g. homework returned — enter grades for the whole class at once)
+- View and edit all grades for one student in detail
+- Final grades and category averages calculated live
+- Individual weight overrides per student (e.g. for students with special needs)
+- Print student grade overview for parent meetings
 
 ---
 
@@ -65,6 +77,14 @@ The final grade is rounded to one decimal place.
 
 Grades use the Austrian scale: **1 is the best, 5 is the worst. Grade 4 is the lowest passing grade.**
 
+| Grade | Meaning |
+|---|---|
+| 1 | Sehr gut (Very good) |
+| 2 | Gut (Good) |
+| 3 | Befriedigend (Satisfactory) |
+| 4 | Genügend (Sufficient) — lowest pass |
+| 5 | Nicht genügend (Insufficient) — fail |
+
 ---
 
 ## Input Rules
@@ -74,44 +94,47 @@ Grades use the Austrian scale: **1 is the best, 5 is the worst. Grade 4 is the l
 
 ---
 
-## Getting Started — Step by Step
+## The Two Screens
 
-### Step 1: Add your students ✅ Available now
-Go to **Schüler** in the sidebar. Enter each student's name and add them. Students are stored globally — you only add them once, even if they appear in multiple courses.
+### Screen 1 — Class View
 
-### Step 2: Create enrollments ✅ Available now
-For each student, click **+ Einschreibung**. Assign them to a course, a class (e.g. "4B"), and a school year (e.g. "2024/25"). This connects the student to a specific course for a specific year.
+Your main working screen. At the top, select which class you are working with. The weight panel shows the current category weights — you can change these and save at any time.
 
-### Step 3: Set weights ✅ Available now
-Go to **Kurskonfiguration**. Select a class, course, and school year. Set the percentage weight for each of the four categories. The weights must add up to 100%.
+The student list shows every student with their current category averages and final grade. Hover over any average to see the individual grades behind it.
 
-If a category does not apply to a course, set its weight to 0% — it will be ignored in the calculation.
+**Entering grades after an event (e.g. homework returned today):**
+Click "Add Event", choose the category, optionally add a date and note, then enter one grade per student. You can skip students who were absent. When you save, the app will tell you if any students are missing a grade and ask you to confirm.
 
-You can also set different weights for an individual student if needed — this overrides the default for that student only. An optional note field lets you record the reason (e.g. "Legasthenie-Ausgleich").
+**Working with a student:**
+Click on any student name to open a small menu: view their full grade detail, add an individual weight override, or remove them from the class.
 
-### Step 4: Enter grades ✅ Available now
-Go to **Noten eingeben**. Select a student and their enrollment. Add individual grades for each category as they come in throughout the year. Each panel shows the live category average, colour-coded green (pass) or red (fail).
+### Screen 2 — Student Detail
 
-### Step 5: View results *(coming soon)*
-The **Dashboard** gives an overview of an entire class or course. Click any student to see a full breakdown: all category averages, the final grade, and every individual entry.
+A full view of one student's grades. Accessed by clicking "View Grades" from the class list. Use the back button to return to the class.
 
----
+Here you can see all grades grouped by category, edit any grade by clicking on it, and add new grades individually. This is also where end-of-semester teachers can enter all grades for one student at once.
 
-## Screens Overview
-
-| Screen | Purpose | Status |
-|---|---|---|
-| Schüler | Add students and manage course enrollments | ✅ Available |
-| Kurskonfiguration | Set category weights per class and course | ✅ Available |
-| Noten eingeben | Add and edit individual grades | ✅ Available |
-| Dashboard | Overview of all students with final grades | Coming soon |
-| Schüler-Detail | Full grade breakdown for one student | Coming soon |
+The print button produces a clean PDF of this view — suitable for parent meetings.
 
 ---
 
-## School Year and Class
+## Weight Presets
 
-When a new school year begins, create a new school year (e.g. "2025/26") and add new enrollments for your students with their new class label. Previous years stay stored and viewable — nothing is overwritten.
+Presets let you save a set of weights under a name and reuse them across classes. The weight panel in Screen 1 has a "Load Preset" dropdown. If you change the weights to something that doesn't match any existing preset, an option to save the new combination as a preset appears automatically.
+
+To manage presets (create, rename, delete), open Settings via the gear icon.
+
+---
+
+## Individual Weight Overrides
+
+If a student needs different weights than the rest of the class (for example, due to a learning accommodation), click the student's name → "Add Individual Weighting". Enter the weights and an optional note explaining the reason. The student's row will show a small indicator so you can see at a glance that their grade uses different weights.
+
+---
+
+## Undo and Redo
+
+Most actions can be undone. Use the undo button (or keyboard shortcut) to reverse the last action. If you entered grades for a whole class event and made a mistake, one undo reverses the entire event. Redo reinstates undone actions. The undo history resets when you close the app.
 
 ---
 
@@ -122,15 +145,3 @@ All data is saved in a file called `grades.db` in the same folder as the app.
 - Do not delete this file
 - To back up your data, copy this file to a safe location (USB drive, cloud storage)
 - If you move the app to a new computer, copy both `Notenrechner.exe` and `grades.db` together
-
----
-
-## Grading Scale Reference
-
-| Grade | Meaning |
-|---|---|
-| 1 | Sehr gut (Very good) |
-| 2 | Gut (Good) |
-| 3 | Befriedigend (Satisfactory) |
-| 4 | Genügend (Sufficient) — lowest pass |
-| 5 | Nicht genügend (Insufficient) — fail |
