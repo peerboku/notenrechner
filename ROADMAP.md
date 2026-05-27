@@ -44,26 +44,26 @@ Phases 1–3 produced a working prototype with 5 screens. The prototype confirme
 The data model has been redesigned for flexibility (dynamic categories, dynamic weights, grading scale setting). The old schema used hardcoded category enums and fixed weight columns. Everything below must be migrated before any new UI is built.
 
 ### New / changed tables
-- [ ] `categories` table — id, name, input_type (continuous | discrete), discrete_values, is_default
-- [ ] Seed 4 default categories on first run: Exams (continuous), Oral (continuous), Homework (discrete 1,3,5), Quizzes (discrete 1,3,5)
-- [ ] `course_config_weights` table — id, course_config_id, category_id, weight (replaces fixed weight columns on CourseConfig)
-- [ ] `weight_presets` table — id, name
-- [ ] `weight_preset_weights` table — id, weight_preset_id, category_id, weight
-- [ ] `weight_override_weights` table — id, weight_override_id, category_id, weight (replaces fixed weight columns on WeightOverride)
-- [ ] Add `note` field to `weight_overrides` table
-- [ ] `grade_events` table — id, course_config_id, category_id, date (optional), note (optional)
-- [ ] Add `event_id` field to `grades` table (optional FK to grade_events)
-- [ ] Add `note` field to `grades` table
-- [ ] Change `grades.category` from enum to FK → `categories.id`
-- [ ] `settings` table — key, value (stub: grading_scale = "austria")
+- [x] `categories` table — id, name, input_type (continuous | discrete), discrete_values, is_default
+- [x] Seed 4 default categories on first run: Exams (continuous), Oral (continuous), Homework (discrete 1,3,5), Quizzes (discrete 1,3,5)
+- [x] `course_config_weights` table — id, course_config_id, category_id, weight (replaces fixed weight columns on CourseConfig)
+- [x] `weight_presets` table — id, name
+- [x] `weight_preset_weights` table — id, weight_preset_id, category_id, weight
+- [x] `weight_override_weights` table — id, weight_override_id, category_id, weight (replaces fixed weight columns on WeightOverride)
+- [x] Add `note` field to `weight_overrides` table
+- [x] `grade_events` table — id, course_config_id, category_id, date (optional), note (optional)
+- [x] Add `event_id` field to `grades` table (optional FK to grade_events)
+- [x] Add `note` field to `grades` table
+- [x] Change `grades.category` from enum to FK → `categories.id`
+- [x] `settings` table — key, value (stub: grading_scale = "austria")
 
 ### Data access layer updates
-- [ ] Rewrite all weight read/write functions to use new weight row tables
-- [ ] Rewrite grade read/write to use category_id FK instead of enum
-- [ ] Add CRUD for categories
-- [ ] Add CRUD for weight presets and preset weights
-- [ ] Add CRUD for grade events
-- [ ] Add settings read/write
+- [x] Rewrite all weight read/write functions to use new weight row tables
+- [x] Rewrite grade read/write to use category_id FK instead of enum
+- [x] Add CRUD for categories
+- [x] Add CRUD for weight presets and preset weights
+- [x] Add CRUD for grade events
+- [x] Add settings read/write
 
 ---
 

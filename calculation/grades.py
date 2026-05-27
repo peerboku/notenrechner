@@ -8,15 +8,11 @@ def category_average(grades: list[float]) -> float | None:
     return sum(grades) / len(grades)
 
 
-def get_weights(enrollment_id: int) -> dict:
+def get_weights(enrollment_id: int) -> dict[int, float]:
+    """Returns category_id → weight mapping for this enrollment."""
     override = weight_overrides.get_override(enrollment_id)
     if override:
-        return {
-            "exams":    override["weight_exams"],
-            "oral":     override["weight_oral"],
-            "homework": override["weight_homework"],
-            "quizzes":  override["weight_quizzes"],
-        }
+        return weight_overrides.get_override_weights(override["id"])
 
     row = _get_enrollment(enrollment_id)
     if row is None:
@@ -28,12 +24,7 @@ def get_weights(enrollment_id: int) -> dict:
             f"No course config for enrollment {enrollment_id} "
             f"(course={row['course_id']}, year={row['school_year_id']}, class={row['class']})"
         )
-    return {
-        "exams":    config["weight_exams"],
-        "oral":     config["weight_oral"],
-        "homework": config["weight_homework"],
-        "quizzes":  config["weight_quizzes"],
-    }
+    return course_configs.get_weights(config["id"])
 
 
 def _get_enrollment(enrollment_id: int):
@@ -46,25 +37,22 @@ def _get_enrollment(enrollment_id: int):
 
 
 def calculate_final_grade(enrollment_id: int) -> float | None:
-    categories = ("exams", "oral", "homework", "quizzes")
-
     all_grades = grades_db.get_grades(enrollment_id)
     if not all_grades:
         return None
 
-    by_category: dict[str, list[float]] = {cat: [] for cat in categories}
+    by_category: dict[int, list[float]] = {}
     for g in all_grades:
-        by_category[g["category"]].append(g["value"])
+        by_category.setdefault(g["category_id"], []).append(g["value"])
 
     weights = get_weights(enrollment_id)
 
     weighted_sum = 0.0
     total_weight = 0.0
-    for cat in categories:
-        w = weights[cat]
+    for cat_id, w in weights.items():
         if w == 0:
             continue
-        avg = category_average(by_category[cat])
+        avg = category_average(by_category.get(cat_id, []))
         if avg is None:
             continue
         weighted_sum += avg * w
