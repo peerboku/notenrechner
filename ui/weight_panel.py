@@ -138,7 +138,10 @@ class WeightPanel(ctk.CTkFrame):
     def _reload_presets(self):
         presets = get_all_presets()
         self._presets = {p["name"]: p["id"] for p in presets}
-        values = [p["name"] for p in presets] if presets else ["— no presets —"]
+        if presets:
+            values = ["— load a preset —"] + [p["name"] for p in presets]
+        else:
+            values = ["— no presets —"]
         self._preset_menu.configure(values=values)
         self._preset_menu.set(values[0])
 
