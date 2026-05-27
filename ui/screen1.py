@@ -10,14 +10,16 @@ class Screen1Frame(ctk.CTkFrame):
         self._config_map: dict[str, int] = {}
 
         self._build_top_bar()
+        self._build_weight_panel()
+        self._build_separator()
         self._build_content()
         self._refresh_class_selector()
 
-    # ── Top bar ──────────────────────────────────────────────────────────────
+    # ── Top bar ───────────────────────────────────────────────────────────────
 
     def _build_top_bar(self):
         bar = ctk.CTkFrame(self, fg_color=("gray88", "gray17"), corner_radius=0)
-        bar.pack(fill="x", side="top")
+        bar.pack(fill="x")
 
         inner = ctk.CTkFrame(bar, fg_color="transparent")
         inner.pack(fill="x", padx=16, pady=10)
@@ -44,19 +46,26 @@ class Screen1Frame(ctk.CTkFrame):
             command=self._open_new_class_modal,
         ).pack(side="left", padx=(12, 0))
 
-    # ── Content area ─────────────────────────────────────────────────────────
+    # ── Weight panel ──────────────────────────────────────────────────────────
+
+    def _build_weight_panel(self):
+        from ui.weight_panel import WeightPanel
+        self._weight_panel = WeightPanel(
+            self, fg_color=("gray92", "gray20"), corner_radius=0
+        )
+        self._weight_panel.pack(fill="x")
+
+    def _build_separator(self):
+        ctk.CTkFrame(self, height=1, fg_color=("gray75", "gray30"), corner_radius=0).pack(
+            fill="x"
+        )
+
+    # ── Content area ──────────────────────────────────────────────────────────
 
     def _build_content(self):
         self._content = ctk.CTkFrame(self, fg_color="transparent")
         self._content.pack(fill="both", expand=True)
-
-        self._placeholder = ctk.CTkLabel(
-            self._content,
-            text="Select a class or create one to get started.",
-            text_color=("gray50", "gray60"),
-            font=ctk.CTkFont(size=15),
-        )
-        self._placeholder.pack(expand=True)
+        self._show_placeholder()
 
     def _show_placeholder(self):
         for w in self._content.winfo_children():
@@ -68,7 +77,7 @@ class Screen1Frame(ctk.CTkFrame):
             font=ctk.CTkFont(size=15),
         ).pack(expand=True)
 
-    # ── Class selector ───────────────────────────────────────────────────────
+    # ── Class selector ────────────────────────────────────────────────────────
 
     def _refresh_class_selector(self, select_label: str | None = None):
         configs = course_configs.get_all_configs()
@@ -78,6 +87,7 @@ class Screen1Frame(ctk.CTkFrame):
             self._class_menu.configure(values=["— no class yet —"])
             self._class_var.set("— no class yet —")
             self._selected_config_id = None
+            self._weight_panel.load_config(None)
             self._show_placeholder()
             return
 
@@ -88,7 +98,6 @@ class Screen1Frame(ctk.CTkFrame):
             self._config_map[label] = cfg["id"]
 
         self._class_menu.configure(values=labels)
-
         target = select_label if select_label in self._config_map else labels[0]
         self._class_var.set(target)
         self._on_class_selected(target)
@@ -98,7 +107,8 @@ class Screen1Frame(ctk.CTkFrame):
         if config_id is None:
             return
         self._selected_config_id = config_id
-        # Phase 5.2+ will populate the content area here
+        self._weight_panel.load_config(config_id)
+        # Phase 5.3+ will update the student list here
 
     # ── New Class modal ───────────────────────────────────────────────────────
 
