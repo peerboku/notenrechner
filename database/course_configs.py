@@ -1,6 +1,20 @@
 from database.connection import get_connection
 
 
+def get_all_configs() -> list:
+    conn = get_connection()
+    return conn.execute(
+        """
+        SELECT cc.id, cc.class, cc.course_id, cc.school_year_id,
+               c.name AS course_name, sy.label AS school_year_label
+        FROM course_configs cc
+        JOIN courses c ON c.id = cc.course_id
+        JOIN school_years sy ON sy.id = cc.school_year_id
+        ORDER BY sy.label DESC, cc.class, c.name
+        """
+    ).fetchall()
+
+
 def get_config(course_id: int, school_year_id: int, class_: str):
     conn = get_connection()
     return conn.execute(
