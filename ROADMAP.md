@@ -74,6 +74,7 @@ The data model has been redesigned for flexibility (dynamic categories, dynamic 
 ### Top Bar
 - [x] Class selector dropdown (combined label: class + course + year, e.g. "4B · English · 2025/26")
 - [x] "New Class" button → guided setup: class label, course, year, initial weights (with preset dropdown)
+- [ ] Gear icon (right side) → Settings modal
 
 ### Weight Panel
 - [x] Collapsible panel, open by default on first launch
@@ -86,7 +87,7 @@ The data model has been redesigned for flexibility (dynamic categories, dynamic 
 - [ ] Loading a preset copies weights into CourseConfig — class owns weights independently after that
 
 ### Student List
-- [ ] Columns: Name, one avg column per active category, Final Grade — all always visible
+- [ ] Columns: Name, one avg column per category with weight > 0, Final Grade — all always visible
 - [ ] Hover on category average cell → popover showing underlying grade entries (date + value per line)
 - [ ] Individual weight override indicator: dot/icon in Name column, tooltip shows custom weights on hover
 - [ ] Single click on student → action menu: View Grades / Add Individual Weighting (or Edit) / Remove
@@ -164,8 +165,8 @@ No UI work required. Pure CI and packaging task. Done here so both platforms are
 
 ## Phase 7 — Settings Modal
 
-- [ ] Accessible via gear icon
-- [ ] Grading scale selector — Austria only for MVP, stub for Germany
+- [ ] Accessible via gear icon in top bar
+- [ ] Grading scale selector — Austria and Germany both supported
 - [ ] Preset management: list, create, rename, delete (with confirmation on delete)
 
 ---
@@ -217,7 +218,6 @@ No UI work required. Pure CI and packaging task. Done here so both platforms are
 ## Phase 9 — Future (Post-MVP)
 
 - [ ] Moving students to a new school year / class
-- [ ] German grading scale (1–6)
 - [ ] Category management UI (teacher-defined categories: add, rename, set input type, set discrete values)
 - [ ] Configurable rounding thresholds
 - [ ] Database backup / export

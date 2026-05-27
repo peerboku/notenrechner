@@ -60,7 +60,7 @@ Every student receives one final grade per course. That final grade is built fro
 
 **Category grade** = average of all individual entries in that category.
 
-**Final grade** = weighted average of the four category grades.
+**Final grade** = weighted average of the four category grades. If you set a category's weight to 0%, that category is hidden from the class view and not included in the final grade.
 
 Example with weights Exams 50%, Oral 20%, Homework 15%, Quizzes 15%:
 
@@ -75,7 +75,9 @@ Final grade: 1.00 + 0.60 + 0.35 + 0.25 = 2.2
 
 The final grade is rounded to one decimal place.
 
-Grades use the Austrian scale: **1 is the best, 5 is the worst. Grade 4 is the lowest passing grade.**
+The app supports both the Austrian and German grading scales. You can switch between them in Settings (gear icon, top right).
+
+**Austrian scale** — 1 is best, 5 is worst. Grade 4 is the lowest passing grade.
 
 | Grade | Meaning |
 |---|---|
@@ -85,11 +87,22 @@ Grades use the Austrian scale: **1 is the best, 5 is the worst. Grade 4 is the l
 | 4 | Genügend (Sufficient) — lowest pass |
 | 5 | Nicht genügend (Insufficient) — fail |
 
+**German scale** — 1 is best, 6 is worst. Grade 4 is the lowest passing grade.
+
+| Grade | Meaning |
+|---|---|
+| 1 | Sehr gut (Very good) |
+| 2 | Gut (Good) |
+| 3 | Befriedigend (Satisfactory) |
+| 4 | Ausreichend (Sufficient) — lowest pass |
+| 5 | Mangelhaft (Poor) — fail |
+| 6 | Ungenügend (Insufficient) — fail |
+
 ---
 
 ## Input Rules
 
-- Exams and Oral grades: any value from 1 to 5
+- Exams and Oral grades: any value within the active grading scale (1–5 for Austria, 1–6 for Germany)
 - Homework and Quizzes: only 1 (good), 3 (okay), or 5 (bad)
 
 ---
