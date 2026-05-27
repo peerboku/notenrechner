@@ -15,6 +15,17 @@ def get_all_configs() -> list:
     ).fetchall()
 
 
+def get_config_by_id(course_config_id: int):
+    conn = get_connection()
+    return conn.execute(
+        """
+        SELECT id, course_id, school_year_id, class
+        FROM course_configs WHERE id = ?
+        """,
+        (course_config_id,),
+    ).fetchone()
+
+
 def get_config(course_id: int, school_year_id: int, class_: str):
     conn = get_connection()
     return conn.execute(

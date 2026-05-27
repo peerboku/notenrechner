@@ -8,13 +8,14 @@ from calculation.validation import validate_weights
 
 
 class WeightPanel(ctk.CTkFrame):
-    def __init__(self, parent, **kwargs):
+    def __init__(self, parent, on_weights_saved=None, **kwargs):
         super().__init__(parent, **kwargs)
         self._config_id: int | None = None
         self._categories: list = []
         self._entries: list[ctk.CTkEntry] = []
         self._presets: dict[str, int] = {}
         self._expanded = True
+        self._on_weights_saved = on_weights_saved
 
         self._build_header()
         self._build_body()
@@ -206,6 +207,8 @@ class WeightPanel(ctk.CTkFrame):
             return
         course_configs.set_weights(self._config_id, weights)
         self._update_validation()
+        if self._on_weights_saved:
+            self._on_weights_saved()
 
     def _open_save_preset_dialog(self):
         weights = self._read_entries()
