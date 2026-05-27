@@ -118,6 +118,18 @@ The data model has been redesigned for flexibility (dynamic categories, dynamic 
 
 ---
 
+## Phase 5b — Mac Build & CI
+
+No UI work required. Pure CI and packaging task. Done here so both platforms are building before the first teacher feedback round — hand her whichever platform she uses.
+
+- [ ] Add `macos-latest` parallel job to GitHub Actions workflow alongside existing `windows-latest` job
+- [ ] PyInstaller produces `.app` bundle from macOS runner
+- [ ] Both artifacts uploaded to the same GitHub release
+- [ ] Test `.app` locally on Mac — confirm app launches, no terminal window, no import errors
+- [ ] Document Gatekeeper workaround in README: right-click → Open on first launch (app is unsigned)
+
+---
+
 ## 👩‍🏫 Feedback Round 1 — Layout & Core Flow
 
 **When:** After Phase 5 is complete, before building Screen 2.
@@ -181,16 +193,19 @@ The data model has been redesigned for flexibility (dynamic categories, dynamic 
 - [ ] Consistent navigation and back button behaviour
 - [ ] App runs without terminal window on Windows
 - [ ] Test .exe on Windows machine
+
+### Docs
 - [ ] README updated for new UI
+- [ ] README includes installation instructions for both Windows (.exe) and Mac (.app)
 
 ---
 
 ## 👩‍🏫 Feedback Round 3 — Pre-Release Validation
 
-**When:** After Phase 8 is complete, on a Windows machine with the actual .exe.
-**What to test:** Hand the teacher the .exe and ask her to use it independently for one real class — no guidance, no developer present if possible.
+**When:** After Phase 8 is complete, on the actual built artifacts.
+**What to test:** Hand the teacher the .exe (Windows) or .app (Mac) and ask her to use it independently for one real class — no guidance, no developer present if possible.
 **Questions to answer:**
-- Does the app install and open without confusion?
+- Does the app open without confusion on her platform?
 - Does she encounter any errors or dead ends?
 - Does she trust the grade calculations?
 - Would she use this instead of her current method?
