@@ -140,3 +140,19 @@ def _seed(conn) -> None:
         )
     if conn.execute("SELECT value FROM settings WHERE key = 'grading_scale'").fetchone() is None:
         conn.execute("INSERT INTO settings (key, value) VALUES ('grading_scale', 'austria')")
+    if conn.execute("SELECT COUNT(*) FROM weight_presets").fetchone()[0] == 0:
+        cat_map = {
+            r["name"]: r["id"]
+            for r in conn.execute("SELECT id, name FROM categories").fetchall()
+        }
+        cur = conn.execute("INSERT INTO weight_presets (name) VALUES ('Standard')")
+        preset_id = cur.lastrowid
+        conn.executemany(
+            "INSERT INTO weight_preset_weights (weight_preset_id, category_id, weight) VALUES (?, ?, ?)",
+            [
+                (preset_id, cat_map["Exams"],    40.0),
+                (preset_id, cat_map["Oral"],     30.0),
+                (preset_id, cat_map["Homework"], 10.0),
+                (preset_id, cat_map["Quizzes"],  20.0),
+            ],
+        )
