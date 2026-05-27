@@ -72,16 +72,16 @@ The data model has been redesigned for flexibility (dynamic categories, dynamic 
 > Primary working screen. Teacher selects a class and works within it.
 
 ### Top Bar
-- [ ] Class selector dropdown (combined label: class + course + year, e.g. "4B · English · 2025/26")
-- [ ] "New Class" button → guided setup: class label, course, year, initial weights (with preset dropdown)
+- [x] Class selector dropdown (combined label: class + course + year, e.g. "4B · English · 2025/26")
+- [x] "New Class" button → guided setup: class label, course, year, initial weights (with preset dropdown)
 
 ### Weight Panel
-- [ ] Collapsible panel, open by default on first launch
-- [ ] Labeled toggle button ("Hide Weights" / "Show Weights") — not just a chevron
-- [ ] Preset dropdown ("Load Preset") at top of panel
-- [ ] Weight fields rendered dynamically from active categories
-- [ ] Live sum validation (red indicator if ≠ 100%), Save/Apply disabled until valid
-- [ ] "Save as New Preset" appears inline when weights don't match any existing preset
+- [x] Collapsible panel, open by default on first launch
+- [x] Labeled toggle button ("Hide Weights" / "Show Weights") — not just a chevron
+- [x] Preset dropdown ("Load Preset") at top of panel
+- [x] Weight fields rendered dynamically from active categories
+- [x] Live sum validation (red indicator if ≠ 100%), Save/Apply disabled until valid
+- [x] "Save as New Preset" appears inline when weights don't match any existing preset
 - [ ] Weight changes do not affect displayed grades until Save/Apply confirmed
 - [ ] Loading a preset copies weights into CourseConfig — class owns weights independently after that
 
