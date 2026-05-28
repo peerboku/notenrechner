@@ -52,7 +52,6 @@ class StudentListPanel(ctk.CTkFrame):
         )
         self._add_entry.pack(side="left")
         self._add_entry.bind("<Return>", self._on_add_student)
-        self._add_entry.bind("<FocusOut>", lambda _e: self._add_entry.delete(0, "end"))
 
     # ── Public API ────────────────────────────────────────────────────────────
 
