@@ -87,21 +87,21 @@ The data model has been redesigned for flexibility (dynamic categories, dynamic 
 - [ ] Loading a preset copies weights into CourseConfig — class owns weights independently after that
 
 ### Student List
-- [ ] Columns: Name, one avg column per category with weight > 0, Final Grade — all always visible
-- [ ] Hover on category average cell → popover showing underlying grade entries (date + value per line)
-- [ ] Single click on student → action menu: View Grades / Remove
+- [x] Columns: Name, one avg column per category with weight > 0, Final Grade — all always visible
+- [x] Hover on category average cell → popover showing underlying grade entries (date + value per line)
+- [x] Single click on student → action menu: View Grades (stub) / Remove
 - [ ] "Add new student" at bottom of list — inline name input on click
 
 ### Event-Based Grade Entry
-- [ ] "Add Event" button → picker modal: category (required) + date (optional) + note (optional)
-- [ ] Column edit mode: distinct background on active column, "Editing: [Category]" label, other columns dimmed
-- [ ] Continuous category inputs: free float within grading scale range
-- [ ] Discrete category inputs: segmented control locked to discrete_values
-- [ ] Tab/Enter moves to next student, blank = skip
-- [ ] Save button at top and bottom of list
-- [ ] On save with blank entries: confirmation popup stating exact count of skipped students
-- [ ] Cancel discards all unsaved inputs
-- [ ] Saved entries linked to shared GradeEvent record via event_id
+- [x] "Add Event" button → picker modal: category (required) + date (optional) + note (optional)
+- [x] Column edit mode: distinct background on active column, "Editing: [Category]" label, other columns dimmed
+- [x] Continuous category inputs: free float within grading scale range
+- [x] Discrete category inputs: segmented control locked to discrete_values
+- [x] Tab/Enter moves to next student, blank = skip
+- [x] Save button at top and bottom of list
+- [x] On save with blank entries: confirmation popup stating exact count of skipped students
+- [x] Cancel discards all unsaved inputs
+- [x] Saved entries linked to shared GradeEvent record via event_id
 
 ### Undo / Redo
 - [ ] Linear undo/redo stack, session-only
@@ -110,6 +110,7 @@ The data model has been redesigned for flexibility (dynamic categories, dynamic 
 
 ### Other Fixes
 - [ ] When adding Event show already added Events to compare. 
+- [ ] Load Preset always shows default and doesnt remember when f.ex. standard was chosen.
 
 ---
 
