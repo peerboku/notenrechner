@@ -117,6 +117,9 @@ The data model has been redesigned for flexibility (dynamic categories, dynamic 
 - [ ] Bulk event save treated as single undo unit
 - [ ] Single grade edit treated as single undo unit
 
+### Other Fixes
+- [ ] When adding Event show already added Events to compare. 
+
 ---
 
 ## Phase 5b — Mac Build & CI
