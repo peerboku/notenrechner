@@ -1,8 +1,9 @@
+import tkinter
 import customtkinter as ctk
 from database import course_configs, grades as grades_db
 from database.categories import get_all_categories
 from database.students import add_student
-from database.enrollments import add_enrollment, get_enrollments_by_filter
+from database.enrollments import add_enrollment, delete_enrollment, get_enrollments_by_filter
 from database.grade_events import add_event
 from calculation.grades import category_average, calculate_final_grade
 
@@ -15,8 +16,9 @@ _EDIT_ACTIVE_COLOR = ("#b85c00", "#ff9040")   # amber — active edit column
 
 
 class StudentListPanel(ctk.CTkFrame):
-    def __init__(self, parent, **kwargs):
+    def __init__(self, parent, on_view_grades=None, **kwargs):
         super().__init__(parent, **kwargs)
+        self._on_view_grades = on_view_grades
         self._config_id: int | None = None
         self._config_data = None
         self._active_cats: list = []
@@ -277,10 +279,20 @@ class StudentListPanel(ctk.CTkFrame):
 
         grades = grades_db.get_grades(enrollment["id"])
         by_cat: dict[int, list[float]] = {}
+        by_cat_rows: dict[int, list] = {}
         for g in grades:
             by_cat.setdefault(g["category_id"], []).append(g["value"])
+            by_cat_rows.setdefault(g["category_id"], []).append(dict(g))
 
-        _cell(row, enrollment["student_name"], COL_NAME, anchor="w", padx=(8, 0))
+        # Name cell — single click opens action menu
+        eid = enrollment["id"]
+        name_lbl = ctk.CTkLabel(
+            row, text=enrollment["student_name"], width=COL_NAME, anchor="w",
+            font=ctk.CTkFont(size=13), text_color=("gray10", "gray90"), cursor="hand2",
+        )
+        name_lbl.pack(side="left", padx=(8, 0), pady=6)
+        name_lbl._label.bind("<Button-1>",
+                             lambda _e, i=eid: self._on_student_click(_e, i))
 
         for cat in self._active_cats:
             active = self._edit_mode and self._edit_cat and cat["id"] == self._edit_cat["id"]
@@ -291,7 +303,11 @@ class StudentListPanel(ctk.CTkFrame):
                 self._edit_inputs.append((enrollment["id"], widget))
             else:
                 avg = category_average(by_cat.get(cat["id"], []))
-                _cell(row, f"{avg:.1f}" if avg is not None else "—", COL_CAT, dim=dim)
+                cell_lbl = _cell(row, f"{avg:.1f}" if avg is not None else "—",
+                                 COL_CAT, dim=dim)
+                cat_rows = by_cat_rows.get(cat["id"])
+                if cat_rows and not self._edit_mode:
+                    _bind_grade_tooltip(cell_lbl, cat_rows)
 
         _divider(row)
 
@@ -329,6 +345,30 @@ class StudentListPanel(ctk.CTkFrame):
         self._add_entry.delete(0, "end")
         self._rebuild_rows()
 
+    def _on_student_click(self, event, enrollment_id: int):
+        if self._edit_mode:
+            return
+        menu = tkinter.Menu(self, tearoff=0)
+        if self._on_view_grades:
+            menu.add_command(
+                label="View Grades",
+                command=lambda: self._on_view_grades(enrollment_id),
+            )
+        else:
+            menu.add_command(label="View Grades", state="disabled")
+        menu.add_separator()
+        menu.add_command(
+            label="Remove",
+            foreground="red",
+            command=lambda: _ConfirmRemoveDialog(
+                self, enrollment_id, on_confirmed=self._rebuild_rows,
+            ),
+        )
+        try:
+            menu.tk_popup(event.x_root, event.y_root)
+        finally:
+            menu.grab_release()
+
 
 # ── Confirm save dialog ───────────────────────────────────────────────────────
 
@@ -362,6 +402,47 @@ class _ConfirmSaveDialog(ctk.CTkToplevel):
         ).pack(side="right")
 
     def _confirm(self):
+        self._on_confirmed()
+        self.destroy()
+
+
+# ── Confirm remove dialog ─────────────────────────────────────────────────────
+
+class _ConfirmRemoveDialog(ctk.CTkToplevel):
+    def __init__(self, parent, enrollment_id: int, on_confirmed):
+        super().__init__(parent)
+        self._enrollment_id = enrollment_id
+        self._on_confirmed = on_confirmed
+        self.title("Remove Student")
+        self.geometry("340x175")
+        self.resizable(False, False)
+        self.grab_set()
+        self._build()
+
+    def _build(self):
+        ctk.CTkLabel(
+            self,
+            text="Remove this student from the class?\nAll their grades will also be deleted.",
+            font=ctk.CTkFont(size=13),
+            justify="center",
+        ).pack(pady=(32, 20), padx=24)
+
+        btn_row = ctk.CTkFrame(self, fg_color="transparent")
+        btn_row.pack(fill="x", padx=24, pady=(0, 20))
+        ctk.CTkButton(
+            btn_row, text="Cancel",
+            fg_color="transparent", border_width=1,
+            command=self.destroy,
+        ).pack(side="left")
+        ctk.CTkButton(
+            btn_row, text="Remove",
+            fg_color=("red4", "red3"),
+            hover_color=("red3", "red2"),
+            command=self._confirm,
+        ).pack(side="right")
+
+    def _confirm(self):
+        delete_enrollment(self._enrollment_id)
         self._on_confirmed()
         self.destroy()
 
@@ -414,15 +495,67 @@ def _header_label(parent, text, width, anchor="center", padx=(0, 0),
 
 
 def _cell(parent, text, width, anchor="center", bold=False, padx=(0, 0),
-          final=False, dim=False):
+          final=False, dim=False) -> ctk.CTkLabel:
     if dim:
         color = ("gray60", "gray50")
     elif final:
         color = _FINAL_COLOR
     else:
         color = ("gray10", "gray90")
-    ctk.CTkLabel(
+    lbl = ctk.CTkLabel(
         parent, text=text, width=width, anchor=anchor,
         font=ctk.CTkFont(size=13, weight="bold" if bold else "normal"),
         text_color=color,
-    ).pack(side="left", padx=padx, pady=6)
+    )
+    lbl.pack(side="left", padx=padx, pady=6)
+    return lbl
+
+
+def _bind_grade_tooltip(widget: ctk.CTkLabel, grades: list[dict]) -> None:
+    """Bind a hover popover showing grade entries (date + value) to a cell label."""
+    tip: list = [None]
+    after_id: list = [None]
+
+    def _show():
+        inner = widget._label
+        x = inner.winfo_rootx()
+        y = inner.winfo_rooty() + inner.winfo_height() + 4
+
+        lines = []
+        for g in grades:
+            val = g["value"]
+            val_str = str(int(val)) if val == int(val) else f"{val:.1f}"
+            date_str = g["date"] if g["date"] else "—"
+            lines.append(f"{date_str}   {val_str}")
+        text = "\n".join(lines)
+
+        is_dark = ctk.get_appearance_mode().lower() == "dark"
+        bg  = "#2b2b2b" if is_dark else "#f5f5f5"
+        fg  = "#e8e8e8" if is_dark else "#1a1a1a"
+
+        t = tkinter.Toplevel(widget)
+        t.overrideredirect(True)
+        t.wm_attributes("-topmost", True)
+        tkinter.Label(
+            t, text=text, bg=bg, fg=fg,
+            font=("Segoe UI", 11), padx=10, pady=6, justify="left",
+        ).pack()
+        t.geometry(f"+{x}+{y}")
+        tip[0] = t
+
+    def _on_enter(_e):
+        after_id[0] = widget._label.after(350, _show)
+
+    def _on_leave(_e):
+        if after_id[0]:
+            widget._label.after_cancel(after_id[0])
+            after_id[0] = None
+        if tip[0]:
+            try:
+                tip[0].destroy()
+            except Exception:
+                pass
+            tip[0] = None
+
+    widget._label.bind("<Enter>", _on_enter)
+    widget._label.bind("<Leave>", _on_leave)
