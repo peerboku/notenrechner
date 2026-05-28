@@ -89,8 +89,7 @@ The data model has been redesigned for flexibility (dynamic categories, dynamic 
 ### Student List
 - [ ] Columns: Name, one avg column per category with weight > 0, Final Grade — all always visible
 - [ ] Hover on category average cell → popover showing underlying grade entries (date + value per line)
-- [ ] Individual weight override indicator: dot/icon in Name column, tooltip shows custom weights on hover
-- [ ] Single click on student → action menu: View Grades / Add Individual Weighting (or Edit) / Remove
+- [ ] Single click on student → action menu: View Grades / Remove
 - [ ] "Add new student" at bottom of list — inline name input on click
 
 ### Event-Based Grade Entry
@@ -103,14 +102,6 @@ The data model has been redesigned for flexibility (dynamic categories, dynamic 
 - [ ] On save with blank entries: confirmation popup stating exact count of skipped students
 - [ ] Cancel discards all unsaved inputs
 - [ ] Saved entries linked to shared GradeEvent record via event_id
-
-### Individual Weighting Modal
-- [ ] Class weights shown as read-only reference
-- [ ] Weight fields (one per active category) pre-filled with class weights
-- [ ] Note field (optional)
-- [ ] Save/Apply (disabled until sum = 100%)
-- [ ] "Reset to Class Defaults" removes override
-- [ ] Row indicator + tooltip once override is active
 
 ### Undo / Redo
 - [ ] Linear undo/redo stack, session-only
@@ -166,11 +157,21 @@ No UI work required. Pure CI and packaging task. Done here so both platforms are
 
 ---
 
-## Phase 7 — Settings Modal
+## Phase 7 — Settings Modal & Individual Weighting
 
+### Settings Modal
 - [ ] Accessible via gear icon in top bar
 - [ ] Grading scale selector — Austria and Germany both supported
 - [ ] Preset management: list, create, rename, delete (with confirmation on delete)
+
+### Individual Weighting Modal
+- [ ] Single click on student → action menu includes: Add Individual Weighting (or Edit)
+- [ ] Individual weight override indicator: dot/icon in Name column, tooltip shows custom weights on hover
+- [ ] Class weights shown as read-only reference in modal
+- [ ] Weight fields (one per active category) pre-filled with class weights
+- [ ] Note field (optional)
+- [ ] Save/Apply (disabled until sum = 100%)
+- [ ] "Reset to Class Defaults" removes override
 
 ---
 
