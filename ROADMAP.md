@@ -192,6 +192,8 @@ No UI work required. Pure CI and packaging task. Done here so both platforms are
 - [ ] Confirmation dialogs for destructive actions (remove student, delete preset)
 - [ ] Input validation error messages in plain non-technical language
 - [ ] Consistent navigation and back button behaviour
+- [ ] "Add student" field clears when focus is lost (FocusOut on CTkEntry compound widget)
+- [ ] Add scrollable Lists with mouse/touchpad
 - [ ] App runs without terminal window on Windows
 - [ ] Test .exe on Windows machine
 
