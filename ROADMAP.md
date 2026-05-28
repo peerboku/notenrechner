@@ -136,7 +136,7 @@ No UI work required. Pure CI and packaging task. Done here so both platforms are
 - Can she find "Add Event" and understand what it does without guidance?
 - Does the student list feel readable or overwhelming?
 - Does column edit mode feel clear or confusing when active?
-
+- Better to show all grade entries with hover. Or with press on grade unten drunter wird aufegeklappt und zeigt alle einetragnene Noten für alle Category grades. 
 **Gate:** Do not start Phase 6 until layout and core flow are validated. Rework Screen 1 first if needed.
 
 ---
