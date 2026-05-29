@@ -144,7 +144,18 @@ class WeightPanel(ctk.CTkFrame):
         else:
             values = ["— no presets —"]
         self._preset_menu.configure(values=values)
-        self._preset_menu.set(values[0])
+
+        # If the current config weights already match a preset, show that preset name.
+        # This makes the dropdown reflect the applied preset after a class switch or restart.
+        selected = values[0]
+        current = self._read_entries()
+        if current and presets:
+            for p in presets:
+                pw = get_preset_weights(p["id"])
+                if all(abs(current.get(cid, 0) - pw.get(cid, 0)) < 0.01 for cid in current):
+                    selected = p["name"]
+                    break
+        self._preset_menu.set(selected)
 
     # ── Preset selection ──────────────────────────────────────────────────────
 

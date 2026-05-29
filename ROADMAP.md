@@ -110,13 +110,8 @@ The data model has been redesigned for flexibility (dynamic categories, dynamic 
 - [x] Counter badge ("3 events") always visible even when panel is collapsed
 - [x] Refreshes automatically after Add Event save and after Ctrl+Z undo
 
-### Undo / Redo
-- [x] Keyboard shortcuts only: Ctrl+Z / Ctrl+Y, Cmd+Z / Cmd+Shift+Z on Mac
-- [x] Bulk event save treated as single undo unit
-- [ ] Single grade edit treated as single undo unit (wired in Phase 6 / Screen 2)
-
 ### Other Fixes
-- [ ] When adding Event show already added Events to compare. 
+- [x] When adding Event show already added Events to compare. 
 - [ ] Load Preset always shows default and doesnt remember when f.ex. standard was chosen.
 
 ---
