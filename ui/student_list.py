@@ -6,6 +6,8 @@ from database.students import add_student
 from database.enrollments import add_enrollment, delete_enrollment, get_enrollments_by_filter
 from database.grade_events import add_event
 from calculation.grades import category_average, calculate_final_grade
+import undo_stack
+from undo_actions import AddEventAction
 
 COL_NAME  = 200
 COL_CAT   =  90
@@ -16,9 +18,10 @@ _EDIT_ACTIVE_COLOR = ("#b85c00", "#ff9040")   # amber — active edit column
 
 
 class StudentListPanel(ctk.CTkFrame):
-    def __init__(self, parent, on_view_grades=None, **kwargs):
+    def __init__(self, parent, on_view_grades=None, on_event_saved=None, **kwargs):
         super().__init__(parent, **kwargs)
         self._on_view_grades = on_view_grades
+        self._on_event_saved = on_event_saved
         self._config_id: int | None = None
         self._config_data = None
         self._active_cats: list = []
@@ -107,6 +110,7 @@ class StudentListPanel(ctk.CTkFrame):
     def load_config(self, config_id: int | None):
         if self._edit_mode:
             self._exit_edit_mode()
+        undo_stack.clear()
         self._config_id = config_id
         if config_id is None:
             self._config_data = None
@@ -215,6 +219,7 @@ class StudentListPanel(ctk.CTkFrame):
             date=date,
             note=note,
         )
+        grade_snapshots = []
         for enrollment_id, value in entries:
             if value is not None:
                 grades_db.add_grade(
@@ -224,7 +229,26 @@ class StudentListPanel(ctk.CTkFrame):
                     date=date,
                     event_id=event_id,
                 )
+                grade_snapshots.append({
+                    "enrollment_id": enrollment_id,
+                    "category_id": cat_id,
+                    "value": value,
+                    "date": date,
+                })
+
+        undo_stack.push(AddEventAction(
+            event_id=event_id,
+            event_snapshot={
+                "course_config_id": self._config_id,
+                "category_id": cat_id,
+                "date": date,
+                "note": note,
+            },
+            grade_snapshots=grade_snapshots,
+        ))
         self._exit_edit_mode()
+        if self._on_event_saved:
+            self._on_event_saved()
 
     # ── Header ────────────────────────────────────────────────────────────────
 
@@ -443,6 +467,7 @@ class _ConfirmRemoveDialog(ctk.CTkToplevel):
 
     def _confirm(self):
         delete_enrollment(self._enrollment_id)
+        undo_stack.clear()   # removing a student cascades grades, invalidating any open undo history
         self._on_confirmed()
         self.destroy()
 

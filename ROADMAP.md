@@ -103,10 +103,17 @@ The data model has been redesigned for flexibility (dynamic categories, dynamic 
 - [x] Cancel discards all unsaved inputs
 - [x] Saved entries linked to shared GradeEvent record via event_id
 
+### Events Panel
+- [x] Collapsible panel next to weight panel (starts collapsed)
+- [x] Lists all grade events for the active class (category · date · note)
+- [x] Delete button per event — confirmation dialog, deletes all linked grades
+- [x] Counter badge ("3 events") always visible even when panel is collapsed
+- [x] Refreshes automatically after Add Event save and after Ctrl+Z undo
+
 ### Undo / Redo
-- [ ] Linear undo/redo stack, session-only
-- [ ] Bulk event save treated as single undo unit
-- [ ] Single grade edit treated as single undo unit
+- [x] Keyboard shortcuts only: Ctrl+Z / Ctrl+Y, Cmd+Z / Cmd+Shift+Z on Mac
+- [x] Bulk event save treated as single undo unit
+- [ ] Single grade edit treated as single undo unit (wired in Phase 6 / Screen 2)
 
 ### Other Fixes
 - [ ] When adding Event show already added Events to compare. 

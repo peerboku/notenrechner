@@ -62,3 +62,9 @@ def delete_grade(grade_id: int) -> None:
     conn = get_connection()
     conn.execute("DELETE FROM grades WHERE id = ?", (grade_id,))
     conn.commit()
+
+
+def delete_grades_by_event(event_id: int) -> None:
+    conn = get_connection()
+    conn.execute("DELETE FROM grades WHERE event_id = ?", (event_id,))
+    conn.commit()

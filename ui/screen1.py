@@ -1,5 +1,8 @@
+import sys
+import tkinter
 import customtkinter as ctk
 from database import course_configs
+import undo_stack
 
 
 class Screen1Frame(ctk.CTkFrame):
@@ -10,10 +13,11 @@ class Screen1Frame(ctk.CTkFrame):
         self._config_map: dict[str, int] = {}
 
         self._build_top_bar()
-        self._build_weight_panel()
+        self._build_panels_row()
         self._build_separator()
         self._build_student_list()
         self._refresh_class_selector()
+        self._bind_shortcuts()
 
     # ── Top bar ───────────────────────────────────────────────────────────────
 
@@ -24,7 +28,7 @@ class Screen1Frame(ctk.CTkFrame):
         inner = ctk.CTkFrame(bar, fg_color="transparent")
         inner.pack(fill="x", padx=16, pady=10)
 
-        # Gear icon — packed right first so it claims its space before left items fill in
+        # Right-side buttons — packed right-to-left, so gear ends up rightmost
         ctk.CTkButton(
             inner,
             text="⚙",
@@ -56,17 +60,34 @@ class Screen1Frame(ctk.CTkFrame):
             command=self._open_new_class_modal,
         ).pack(side="left", padx=(12, 0))
 
-    # ── Weight panel ──────────────────────────────────────────────────────────
+    # ── Panels row (weights + events side by side) ────────────────────────────
 
-    def _build_weight_panel(self):
+    def _build_panels_row(self):
         from ui.weight_panel import WeightPanel
+        from ui.events_panel import EventsPanel
+
+        row = ctk.CTkFrame(self, fg_color=("gray92", "gray20"), corner_radius=0)
+        row.pack(fill="x")
+
         self._weight_panel = WeightPanel(
-            self,
+            row,
             on_weights_saved=self._on_weights_saved,
-            fg_color=("gray92", "gray20"),
+            fg_color="transparent",
             corner_radius=0,
         )
-        self._weight_panel.pack(fill="x")
+        self._weight_panel.pack(side="left", fill="both", expand=True)
+
+        ctk.CTkFrame(
+            row, width=1, fg_color=("gray75", "gray30"), corner_radius=0
+        ).pack(side="left", fill="y")
+
+        self._events_panel = EventsPanel(
+            row,
+            on_event_deleted=self._on_event_deleted,
+            fg_color="transparent",
+            corner_radius=0,
+        )
+        self._events_panel.pack(side="left", fill="both", expand=True)
 
     def _build_separator(self):
         ctk.CTkFrame(
@@ -77,7 +98,11 @@ class Screen1Frame(ctk.CTkFrame):
 
     def _build_student_list(self):
         from ui.student_list import StudentListPanel
-        self._student_list = StudentListPanel(self, fg_color="transparent")
+        self._student_list = StudentListPanel(
+            self,
+            on_event_saved=self._on_event_saved,
+            fg_color="transparent",
+        )
         self._student_list.pack(fill="both", expand=True)
 
     # ── Class selector ────────────────────────────────────────────────────────
@@ -91,6 +116,7 @@ class Screen1Frame(ctk.CTkFrame):
             self._class_var.set("— no class yet —")
             self._selected_config_id = None
             self._weight_panel.load_config(None)
+            self._events_panel.load_config(None)
             self._student_list.load_config(None)
             return
 
@@ -111,9 +137,16 @@ class Screen1Frame(ctk.CTkFrame):
             return
         self._selected_config_id = config_id
         self._weight_panel.load_config(config_id)
+        self._events_panel.load_config(config_id)
         self._student_list.load_config(config_id)
 
     def _on_weights_saved(self):
+        self._student_list.refresh()
+
+    def _on_event_saved(self):
+        self._events_panel.refresh()
+
+    def _on_event_deleted(self):
         self._student_list.refresh()
 
     # ── New Class modal ───────────────────────────────────────────────────────
@@ -131,3 +164,30 @@ class Screen1Frame(ctk.CTkFrame):
     def _open_settings_modal(self):
         from ui.settings_modal import SettingsModal
         SettingsModal(self)
+
+    # ── Keyboard shortcuts ────────────────────────────────────────────────────
+
+    def _bind_shortcuts(self):
+        self._app.bind("<Control-z>", self._undo)
+        self._app.bind("<Control-y>", self._redo)
+        self._app.bind("<Control-Z>", self._redo)   # Ctrl+Shift+Z
+        if sys.platform == "darwin":
+            self._app.bind("<Command-z>", self._undo)
+            self._app.bind("<Command-Z>", self._redo)  # Cmd+Shift+Z
+
+    def _undo(self, _event=None):
+        # Don't intercept when a text entry owns focus (let it handle its own undo)
+        focused = self._app.focus_get()
+        if isinstance(focused, tkinter.Entry):
+            return
+        if undo_stack.undo():
+            self._student_list.refresh()
+            self._events_panel.refresh()
+
+    def _redo(self, _event=None):
+        focused = self._app.focus_get()
+        if isinstance(focused, tkinter.Entry):
+            return
+        if undo_stack.redo():
+            self._student_list.refresh()
+            self._events_panel.refresh()

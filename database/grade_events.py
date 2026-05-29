@@ -37,6 +37,20 @@ def get_events_by_config(course_config_id: int) -> list:
     ).fetchall()
 
 
+def get_events_with_category(course_config_id: int) -> list:
+    conn = get_connection()
+    return conn.execute(
+        """
+        SELECT ge.id, ge.date, ge.note, c.name AS category_name
+        FROM grade_events ge
+        JOIN categories c ON c.id = ge.category_id
+        WHERE ge.course_config_id = ?
+        ORDER BY ge.id DESC
+        """,
+        (course_config_id,),
+    ).fetchall()
+
+
 def delete_event(event_id: int) -> None:
     conn = get_connection()
     conn.execute("DELETE FROM grade_events WHERE id = ?", (event_id,))
