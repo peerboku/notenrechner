@@ -1,6 +1,29 @@
 # Notenrechner — Teacher Guide
 
-A desktop app for managing and calculating student grades. All data is stored locally on your computer. No internet connection required.
+Da ich viele Lehrerinnen und Lehrer im Freundes- und Familienkreis habe und mitbekommen habe, dass das Eintragen und Ausrechnen von Noten oft noch klassisch mit Stift, Papier und Taschenrechner passiert, habe ich mich entschieden, als kleines Hobbyprojekt eine simple und intuitive App zu bauen.
+Die App ermöglicht es, Noten schnell einzutragen und übersichtlich darzustellen.
+
+Der Markt an Notenrechner- und Verwaltungsapps ist bereits sehr gesättigt, aber trotzdem sind viele Apps entweder zu kompliziert in der Handhabung oder haben ein sehr veraltetes Design. 
+
+Ich möchte euch die Chance geben, aktiv an der Gestaltung der App teilzunehmen — deshalb werde ich nach jeder Version eine kleine Feedbackrunde machen und eure Rückmeldungen direkt in den Prozess einfließen lassen.
+
+Vielen Dank schon mal für eure Hilfe!
+
+Liebe Grüße, Peer
+
+---
+
+> **Hinweis:** In der aktuellen Version sind sowohl die App selbst als auch diese Beschreibung noch auf Englisch. Eine deutsche Benutzeroberfläche ist für eine spätere Version geplant.
+
+---
+
+## Feedback
+
+This is an early version and your experience with it matters. If you have a few minutes, please fill out the short feedback form — it helps shape what gets built next.
+
+**[→ Give feedback](https://docs.google.com/forms/d/e/1FAIpQLSeE-4u26JZE-SWuTIOBHFQ7Oof3R2aXr3Ax9JmUPsxeXuW8rQ/viewform)**
+
+Any thoughts are welcome: what felt confusing, what worked well, what you wish the app could do.
 
 ---
 
@@ -8,59 +31,63 @@ A desktop app for managing and calculating student grades. All data is stored lo
 
 1. Download `Notenrechner.exe` from the [Releases page](https://github.com/peerboku/notenrechner/releases)
 2. Double-click to open — no installation needed
-3. On first run the app creates a file called `grades.db` in the same folder. Do not delete this file — it contains all your data.
+3. On first run the app creates a file called `grades.db` in the same folder. **Do not delete this file** — it contains all your data.
 
 ---
-## Current Version (v0.3.2 — Early Preview)
 
-This is an early preview release for testing purposes. Not all features are available yet.
+## Upgrading from an Earlier Version
+
+> **If you have used v0.3.x or earlier**, the database format has changed and your existing data is not compatible with v0.5.0. You will need to start fresh.
+
+**Steps to upgrade:**
+
+1. Optional: keep a copy of your old `Notenrechner.exe` and `grades.db` somewhere safe for reference.
+2. Download the new `Notenrechner.exe` and place it in a folder of your choice.
+3. Run the new version. It will create a new `grades.db` automatically.
+4. Re-enter your classes and grades in the new interface.
+
+---
+
+## Current Version (v0.5.0)
+
+This is the first release of the redesigned interface. The previous version (v0.3.x) was evaluated and found to require too many steps for everyday use. This version is built around a single main screen that matches how a teacher actually works with a class.
 
 **What works in this version:**
 
-- Add, rename, and delete students
-- Assign students to courses, classes, and school years
-- Set category weights per course — with an optional per-student override and reason note
-- Enter grades per category, with live category averages
-- Input validation: homework and quiz grades are locked to 1, 3, or 5
+- Create classes (class label + course + school year)
+- Set category weights with reusable presets — the app remembers which preset is applied to each class
+- Add students to a class by name
+- Enter grades class-wide after an event (e.g. a test returned — one grade per student at once)
+- View category averages and final grades live in the student list
+- Hover over any category average to see the individual grades behind it
+- Manage and delete past grade events from the Events panel
+- Manage weight presets (create, rename, delete) via the Settings gear icon
+- Undo the last grade event with Ctrl+Z (Windows) or Cmd+Z (Mac)
 
 **Not yet available (coming in a future release):**
 
-- Overview of all students with final grades (Dashboard)
-- Full grade breakdown per student across all courses (Student Detail)
-
-**Note:** The next release will also include a reworked interface. The current version was tested internally and found to require too many steps for comfortable daily use. The workflow will be simplified before the app is ready for regular use.
-
-## Next Version (v0.4.0 — First Preview)
-
-This version introduces a fully reworked interface. The previous version was evaluated and found to require too many steps for comfortable daily use. The new interface is built around two screens and is designed to match how a teacher actually thinks about their class.
-
-**What works in this version:**
-
-- Create a class (class label + course + school year)
-- Set category weights with reusable presets
-- Add students to a class by name
-- Enter grades after a class event (e.g. homework returned — enter grades for the whole class at once)
-- View and edit all grades for one student in detail
-- Final grades and category averages calculated live
-- Individual weight overrides per student (e.g. for students with special needs)
-- Print student grade overview for parent meetings
+- Full grade detail view per student (Screen 2)
+- Individual weight overrides per student
+- Print / PDF export
 
 ---
 
 ## How Grades Are Calculated
 
-Every student receives one final grade per course. That final grade is built from four categories:
+Every student receives one final grade per course. That grade is built from up to four categories:
 
-| Category | What counts |
-|---|---|
-| Exams | Written exams and tests |
-| Oral | Oral participation and oral exams |
-| Homework | Homework assignments |
-| Quizzes | Short quizzes |
+| Category | Input type | Valid values |
+|---|---|---|
+| Exams | Continuous | Any value (e.g. 1.0 – 5.0) |
+| Oral | Continuous | Any value (e.g. 1.0 – 5.0) |
+| Homework | Discrete | 1, 3, or 5 only |
+| Quizzes | Discrete | 1, 3, or 5 only |
 
 **Category grade** = average of all individual entries in that category.
 
-**Final grade** = weighted average of the four category grades. If you set a category's weight to 0%, that category is hidden from the class view and not included in the final grade.
+**Final grade** = weighted average of the category grades, rounded to one decimal place.
+
+Categories with a weight of 0% are hidden from the student list and excluded from the final grade. Categories with no grades entered are also excluded.
 
 Example with weights Exams 50%, Oral 20%, Homework 15%, Quizzes 15%:
 
@@ -73,81 +100,39 @@ Quizzes average:  1.67 × 15% = 0.25
 Final grade: 1.00 + 0.60 + 0.35 + 0.25 = 2.2
 ```
 
-The final grade is rounded to one decimal place.
-
-The app supports both the Austrian and German grading scales. You can switch between them in Settings (gear icon, top right).
-
-**Austrian scale** — 1 is best, 5 is worst. Grade 4 is the lowest passing grade.
-
-| Grade | Meaning |
-|---|---|
-| 1 | Sehr gut (Very good) |
-| 2 | Gut (Good) |
-| 3 | Befriedigend (Satisfactory) |
-| 4 | Genügend (Sufficient) — lowest pass |
-| 5 | Nicht genügend (Insufficient) — fail |
-
-**German scale** — 1 is best, 6 is worst. Grade 4 is the lowest passing grade.
-
-| Grade | Meaning |
-|---|---|
-| 1 | Sehr gut (Very good) |
-| 2 | Gut (Good) |
-| 3 | Befriedigend (Satisfactory) |
-| 4 | Ausreichend (Sufficient) — lowest pass |
-| 5 | Mangelhaft (Poor) — fail |
-| 6 | Ungenügend (Insufficient) — fail |
-
 ---
 
-## Input Rules
+## The Main Screen
 
-- Exams and Oral grades: any value within the active grading scale (1–5 for Austria, 1–6 for Germany)
-- Homework and Quizzes: only 1 (good), 3 (okay), or 5 (bad)
+At the top, select which class you are working with using the dropdown. Use **New Class** to set one up.
 
----
+### Weight Panel
 
-## The Two Screens
+Shows the current category weights for the selected class. You can change the weights and click **Save** to apply them. The sum must equal 100% before saving is allowed.
 
-### Screen 1 — Class View
+Use **Load Preset** to apply a saved weight configuration. If you enter weights that don't match any existing preset, an option to **Save as New Preset** appears automatically. The dropdown always shows which preset is currently applied — when the panel is collapsed, the preset name appears next to the "Show Weights" button.
 
-Your main working screen. At the top, select which class you are working with. The weight panel shows the current category weights — you can change these and save at any time.
+### Events Panel
 
-The student list shows every student with their current category averages and final grade. Hover over any average to see the individual grades behind it.
+Lists all grade events that have been saved for the current class. Click **Show Events** to expand it. Each event shows the category, date, and note. Use the **Delete** button to remove an event and all the grades linked to it — a confirmation will appear before anything is deleted.
+
+### Student List
+
+Shows every student with their current category averages and final grade. Hover over any category average to see the individual grade entries behind it.
 
 **Entering grades after an event (e.g. homework returned today):**
-Click "Add Event", choose the category, optionally add a date and note, then enter one grade per student. You can skip students who were absent. When you save, the app will tell you if any students are missing a grade and ask you to confirm.
+Click **Add Event**, choose the category, optionally add a date and note, then confirm. The list switches into edit mode — enter one grade per student. You can leave students blank to skip them. At the top and bottom of the list there is a **Save** button. When you save, the app will tell you exactly how many students have no grade and ask you to confirm.
+
+**To undo the last event:** press Ctrl+Z (or Cmd+Z on Mac). This removes all grades from that event and deletes the event record. The undo history is session-only — it resets when you close the app.
 
 **Working with a student:**
-Click on any student name to open a small menu: view their full grade detail, add an individual weight override, or remove them from the class.
-
-### Screen 2 — Student Detail
-
-A full view of one student's grades. Accessed by clicking "View Grades" from the class list. Use the back button to return to the class.
-
-Here you can see all grades grouped by category, edit any grade by clicking on it, and add new grades individually. This is also where end-of-semester teachers can enter all grades for one student at once.
-
-The print button produces a clean PDF of this view — suitable for parent meetings.
+Click on any student's name to open a small menu with the option to remove them from the class.
 
 ---
 
 ## Weight Presets
 
-Presets let you save a set of weights under a name and reuse them across classes. The weight panel in Screen 1 has a "Load Preset" dropdown. If you change the weights to something that doesn't match any existing preset, an option to save the new combination as a preset appears automatically.
-
-To manage presets (create, rename, delete), open Settings via the gear icon.
-
----
-
-## Individual Weight Overrides
-
-If a student needs different weights than the rest of the class (for example, due to a learning accommodation), click the student's name → "Add Individual Weighting". Enter the weights and an optional note explaining the reason. The student's row will show a small indicator so you can see at a glance that their grade uses different weights.
-
----
-
-## Undo and Redo
-
-Most actions can be undone. Use the undo button (or keyboard shortcut) to reverse the last action. If you entered grades for a whole class event and made a mistake, one undo reverses the entire event. Redo reinstates undone actions. The undo history resets when you close the app.
+Presets let you save a set of weights under a name and reuse them across classes. To manage presets (rename or delete existing ones), open Settings via the gear icon in the top right.
 
 ---
 
@@ -155,6 +140,6 @@ Most actions can be undone. Use the undo button (or keyboard shortcut) to revers
 
 All data is saved in a file called `grades.db` in the same folder as the app.
 
-- Do not delete this file
+- **Do not delete this file**
 - To back up your data, copy this file to a safe location (USB drive, cloud storage)
 - If you move the app to a new computer, copy both `Notenrechner.exe` and `grades.db` together
