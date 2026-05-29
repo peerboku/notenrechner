@@ -378,9 +378,7 @@ class StudentListPanel(ctk.CTkFrame):
                 label="View Grades",
                 command=lambda: self._on_view_grades(enrollment_id),
             )
-        else:
-            menu.add_command(label="View Grades", state="disabled")
-        menu.add_separator()
+            menu.add_separator()
         menu.add_command(
             label="Remove",
             foreground="red",
