@@ -112,7 +112,7 @@ The data model has been redesigned for flexibility (dynamic categories, dynamic 
 
 ### Other Fixes
 - [x] When adding Event show already added Events to compare. 
-- [ ] Load Preset always shows default and doesnt remember when f.ex. standard was chosen.
+- [x] Load Preset always shows default and doesnt remember when f.ex. standard was chosen.
 
 ---
 

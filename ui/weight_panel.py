@@ -37,6 +37,15 @@ class WeightPanel(ctk.CTkFrame):
         )
         self._toggle_btn.pack(side="left")
 
+        # Shows the active preset name when the panel is collapsed
+        self._preset_label = ctk.CTkLabel(
+            header,
+            text="",
+            font=ctk.CTkFont(size=12),
+            text_color=("gray40", "gray60"),
+        )
+        # Not packed yet — becomes visible only when the body is hidden
+
     # ── Collapsible body ──────────────────────────────────────────────────────
 
     def _build_body(self):
@@ -91,9 +100,11 @@ class WeightPanel(ctk.CTkFrame):
         if self._expanded:
             self._body.pack_forget()
             self._toggle_btn.configure(text="Show Weights")
+            self._preset_label.pack(side="left", padx=(12, 0))
         else:
             self._body.pack(fill="x", padx=16, pady=(8, 12))
             self._toggle_btn.configure(text="Hide Weights")
+            self._preset_label.pack_forget()
         self._expanded = not self._expanded
 
     # ── Config loading ────────────────────────────────────────────────────────
@@ -127,7 +138,7 @@ class WeightPanel(ctk.CTkFrame):
             entry = ctk.CTkEntry(row, width=80, justify="right", font=ctk.CTkFont(size=13))
             entry.insert(0, _fmt(weights.get(cat["id"], 0.0)))
             entry.pack(side="left")
-            entry.bind("<KeyRelease>", lambda _e: self._update_validation())
+            entry.bind("<KeyRelease>", lambda _e: (self._update_validation(), self._update_preset_label()))
 
             ctk.CTkLabel(row, text="%", font=ctk.CTkFont(size=13)).pack(
                 side="left", padx=(4, 0)
@@ -156,6 +167,15 @@ class WeightPanel(ctk.CTkFrame):
                     selected = p["name"]
                     break
         self._preset_menu.set(selected)
+        self._update_preset_label()
+
+    def _update_preset_label(self):
+        name = self._preset_menu.get()
+        if name in ("— load a preset —", "— no presets —", ""):
+            text = "Custom" if self._config_id is not None else ""
+        else:
+            text = name
+        self._preset_label.configure(text=text)
 
     # ── Preset selection ──────────────────────────────────────────────────────
 
@@ -168,6 +188,7 @@ class WeightPanel(ctk.CTkFrame):
             entry.delete(0, "end")
             entry.insert(0, _fmt(weights.get(cat["id"], 0.0)))
         self._update_validation()
+        self._update_preset_label()
 
     # ── Live validation ───────────────────────────────────────────────────────
 
