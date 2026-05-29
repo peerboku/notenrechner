@@ -24,6 +24,16 @@ class Screen1Frame(ctk.CTkFrame):
         inner = ctk.CTkFrame(bar, fg_color="transparent")
         inner.pack(fill="x", padx=16, pady=10)
 
+        # Gear icon — packed right first so it claims its space before left items fill in
+        ctk.CTkButton(
+            inner,
+            text="⚙",
+            width=48, height=48,
+            fg_color="transparent",
+            font=ctk.CTkFont(size=32),
+            command=self._open_settings_modal,
+        ).pack(side="right")
+
         ctk.CTkLabel(inner, text="Class:", font=ctk.CTkFont(size=13)).pack(
             side="left", padx=(0, 8)
         )
@@ -115,3 +125,9 @@ class Screen1Frame(ctk.CTkFrame):
 
     def _on_class_created(self, config_id: int, label: str):
         self._refresh_class_selector(select_label=label)
+
+    # ── Settings modal ────────────────────────────────────────────────────────
+
+    def _open_settings_modal(self):
+        from ui.settings_modal import SettingsModal
+        SettingsModal(self)

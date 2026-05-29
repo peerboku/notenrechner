@@ -74,7 +74,7 @@ The data model has been redesigned for flexibility (dynamic categories, dynamic 
 ### Top Bar
 - [x] Class selector dropdown (combined label: class + course + year, e.g. "4B · English · 2025/26")
 - [x] "New Class" button → guided setup: class label, course, year, initial weights (with preset dropdown)
-- [ ] Gear icon (right side) → Settings modal
+- [x] Gear icon (right side) → Settings modal
 
 ### Weight Panel
 - [x] Collapsible panel, open by default on first launch
@@ -161,9 +161,9 @@ No UI work required. Pure CI and packaging task. Done here so both platforms are
 ## Phase 7 — Settings Modal & Individual Weighting
 
 ### Settings Modal
-- [ ] Accessible via gear icon in top bar
-- [ ] Grading scale selector — Austria and Germany both supported
-- [ ] Preset management: list, create, rename, delete (with confirmation on delete)
+- [x] Accessible via gear icon in top bar
+- [x] Preset management: list, create, rename, delete (with confirmation on delete)
+- [!] Grading scale selector — removed; scale has no effect on calculation or pass/fail threshold, teachers self-regulate input range naturally
 
 ### Individual Weighting Modal
 - [ ] Single click on student → action menu includes: Add Individual Weighting (or Edit)
