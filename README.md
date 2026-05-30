@@ -17,6 +17,10 @@ Liebe Grüße, Peer
 
 ---
 
+![Notenrechner Screenshot](docs/screenshot_notenrechner_v.0.5.0.png)
+
+---
+
 ## Feedback
 
 This is an early version and your experience with it matters. If you have a few minutes, please fill out the short feedback form — it helps shape what gets built next.
