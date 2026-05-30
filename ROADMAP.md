@@ -120,11 +120,11 @@ The data model has been redesigned for flexibility (dynamic categories, dynamic 
 
 No UI work required. Pure CI and packaging task. Done here so both platforms are building before the first teacher feedback round — hand her whichever platform she uses.
 
-- [ ] Add `macos-latest` parallel job to GitHub Actions workflow alongside existing `windows-latest` job
-- [ ] PyInstaller produces `.app` bundle from macOS runner
-- [ ] Both artifacts uploaded to the same GitHub release
+- [x] Add `macos-latest` parallel job to GitHub Actions workflow alongside existing `windows-latest` job
+- [x] PyInstaller produces `.app` bundle from macOS runner
+- [x] Both artifacts uploaded to the same GitHub release
 - [ ] Test `.app` locally on Mac — confirm app launches, no terminal window, no import errors
-- [ ] Document Gatekeeper workaround in README: right-click → Open on first launch (app is unsigned)
+- [x] Document Gatekeeper workaround in README: right-click → Open on first launch (app is unsigned)
 
 ---
 

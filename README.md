@@ -33,9 +33,18 @@ Any thoughts are welcome: what felt confusing, what worked well, what you wish t
 
 ## Installation
 
+### Windows
 1. Download `Notenrechner.exe` from the [Releases page](https://github.com/peerboku/notenrechner/releases)
 2. Double-click to open — no installation needed
 3. On first run the app creates a file called `grades.db` in the same folder. **Do not delete this file** — it contains all your data.
+
+### Mac
+1. Download `Notenrechner-mac.zip` from the [Releases page](https://github.com/peerboku/notenrechner/releases)
+2. Unzip the file — you will get `Notenrechner.app`
+3. Move it to your Applications folder or any folder you prefer
+4. On first run the app creates a file called `grades.db` in the same folder as the app. **Do not delete this file** — it contains all your data.
+
+> **First launch on Mac:** Because the app is unsigned, macOS will block it the first time. To open it: right-click (or Ctrl-click) on `Notenrechner.app` → **Open** → click **Open** in the dialog that appears. You only need to do this once.
 
 ---
 
@@ -84,8 +93,8 @@ Every student receives one final grade per course. That grade is built from up t
 |---|---|---|
 | Exams | Continuous | Any value (e.g. 1.0 – 5.0) |
 | Oral | Continuous | Any value (e.g. 1.0 – 5.0) |
-| Homework | Discrete | 1, 3, or 5 only |
-| Quizzes | Discrete | 1, 3, or 5 only |
+| Homework | Discrete | Good (1), Okay (3), or Bad (5) only |
+| Quizzes | Discrete | Good (1), Okay (3), or Bad (5) only|
 
 **Category grade** = average of all individual entries in that category.
 
