@@ -44,7 +44,9 @@ Any thoughts are welcome: what felt confusing, what worked well, what you wish t
 3. Move it to your Applications folder or any folder you prefer
 4. On first run the app creates a file called `grades.db` in the same folder as the app. **Do not delete this file** — it contains all your data.
 
-> **First launch on Mac:** Because the app is unsigned, macOS will block it the first time. To open it: right-click (or Ctrl-click) on `Notenrechner.app` → **Open** → click **Open** in the dialog that appears. You only need to do this once.
+> **First launch on Mac:** Because the app is unsigned, macOS will block it on first open. When you see the *"Not Opened"* warning, click **Done** (not Move to Trash). Then go to **System Settings → Privacy & Security**, scroll down, and click **Open Anyway**. Enter your Mac password when asked. You only need to do this once.
+>
+> Alternatively, open Terminal and run: `xattr -cr /Applications/Notenrechner.app` — then double-click normally.
 
 ---
 
