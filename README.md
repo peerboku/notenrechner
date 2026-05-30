@@ -34,7 +34,7 @@ Any thoughts are welcome: what felt confusing, what worked well, what you wish t
 ## Installation
 
 ### Windows
-1. Download `Notenrechner.exe` from the [Releases page](https://github.com/peerboku/notenrechner/releases)
+1. Download `Notenrechne.exe` from the [Releases page](https://github.com/peerboku/notenrechner/releases)
 2. Double-click to open — no installation needed
 3. On first run the app creates a file called `grades.db` in the same folder. **Do not delete this file** — it contains all your data.
 
@@ -157,4 +157,4 @@ All data is saved in a file called `grades.db` in the same folder as the app.
 
 - **Do not delete this file**
 - To back up your data, copy this file to a safe location (USB drive, cloud storage)
-- If you move the app to a new computer, copy both `Notenrechner.exe` and `grades.db` together
+- If you move the app to a new computer, copy both the app (`Notenrechner.exe` or `Notenrechner.app`) and `grades.db` together

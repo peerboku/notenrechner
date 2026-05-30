@@ -29,7 +29,7 @@ jobs:
           pyinstaller
           --onefile
           --windowed
-          --name "Notenrechner"
+          --name "Notenrechner-win"
           --add-data "database;database"
           --add-data "calculation;calculation"
           --collect-data customtkinter
@@ -38,7 +38,7 @@ jobs:
       - name: Upload to GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          files: dist/Notenrechner.exe
+          files: dist/Notenrechner-win.exe
 
   build-mac:
     runs-on: macos-latest
