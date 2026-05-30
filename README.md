@@ -1,11 +1,12 @@
 # Notenrechner — Teacher Guide
 
-Da ich viele Lehrerinnen und Lehrer im Freundes- und Familienkreis habe und mitbekommen habe, dass das Eintragen und Ausrechnen von Noten oft noch klassisch mit Stift, Papier und Taschenrechner passiert, habe ich mich entschieden, als kleines Hobbyprojekt eine simple und intuitive App zu bauen.
+Da ich viele Lehrerinnen und Lehrer im Freundes- und Familienkreis habe und mitbekommen habe, dass das Eintragen und Ausrechnen von Noten oft noch klassisch mit Stift, Papier und Taschenrechner passiert, habe ich mich entschieden, als kleines Hobbyprojekt eine simple,intuitive und vor allem KOSTENLOSE App zu bauen.
 Die App ermöglicht es, Noten schnell einzutragen und übersichtlich darzustellen.
 
-Der Markt an Notenrechner- und Verwaltungsapps ist bereits sehr gesättigt, aber trotzdem sind viele Apps entweder zu kompliziert in der Handhabung oder haben ein sehr veraltetes Design. 
+Es gibt bereits viele Notenrechner- und Verwaltungsapps, aber diese sind entweder zu kompliziert in der Handhabung, haben ein sehr veraltetes Design oder kosten Geld.
 
-Ich möchte euch die Chance geben, aktiv an der Gestaltung der App teilzunehmen — deshalb werde ich nach jeder Version eine kleine Feedbackrunde machen und eure Rückmeldungen direkt in den Prozess einfließen lassen.
+Ich möchte euch die Chance geben, aktiv an der Gestaltung der App teilzunehmen.
+Deshalb werde ich nach jedem größeren Appupdate eine kleine Feedbackrunde machen und euer Feedback dann auch direkt miteinfließen lassen.
 
 Vielen Dank schon mal für eure Hilfe!
 
