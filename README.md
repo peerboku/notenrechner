@@ -88,6 +88,43 @@ This is the first release of the redesigned interface. The previous version (v0.
 
 ---
 
+## The Main Screen
+
+At the top, select which class you are working with using the dropdown. Use **New Class** to set one up.
+
+**Add students** to your class in the text field on the bottom left. 
+
+### Weight Panel
+
+Shows the current category weights (Gewichtung) for the selected class. You can change the weights and click **Save** to apply them. The sum must equal 100% before saving is allowed.
+
+Use **Load Preset** to apply a saved weight configuration. If you enter weights that don't match any existing preset, an option to **Save as New Preset** appears automatically. The dropdown always shows which preset is currently applied — when the panel is collapsed, the preset name appears next to the "Show Weights" button.
+
+If you don't want to use all categories, just put 0 % for that category and it will automatically disappear from the student list viewer.
+
+f.ex.: Only Exams (Klausuren) and Oral (Mündlich).
+
+![Adjust weigths screenhot](docs/screenshot_notenrechner_adjust_weights.png)
+
+
+### Events Panel
+
+Lists all grade events that have been saved for the current class. Click **Show Events** to expand it. Each event shows the category, date, and note. Use the **Delete** button to remove an event and all the grades linked to it — a confirmation will appear before anything is deleted.
+
+### Student List
+
+Shows every student with their current category averages and final grade. Hover over any category average to see the individual grade entries behind it.
+
+**Entering grades after an event (e.g. homework returned today):**
+Click **Add Event**, choose the category, optionally add a date and note, then confirm. The list switches into edit mode — enter one grade per student. You can leave students blank to skip them. At the top and bottom of the list there is a **Save** button. When you save, the app will tell you exactly how many students have no grade and ask you to confirm.
+
+**To undo the last event:** press Ctrl+Z (or Cmd+Z on Mac). This removes all grades from that event and deletes the event record. The undo history is session-only — it resets when you close the app.
+
+**Working with a student:**
+Click on any student's name to open a small menu with the option to remove them from the class.
+
+---
+
 ## How Grades Are Calculated
 
 Every student receives one final grade per course. That grade is built from up to four categories:
@@ -115,34 +152,6 @@ Quizzes average:  1.67 × 15% = 0.25
 
 Final grade: 1.00 + 0.60 + 0.35 + 0.25 = 2.2
 ```
-
----
-
-## The Main Screen
-
-At the top, select which class you are working with using the dropdown. Use **New Class** to set one up.
-
-### Weight Panel
-
-Shows the current category weights for the selected class. You can change the weights and click **Save** to apply them. The sum must equal 100% before saving is allowed.
-
-Use **Load Preset** to apply a saved weight configuration. If you enter weights that don't match any existing preset, an option to **Save as New Preset** appears automatically. The dropdown always shows which preset is currently applied — when the panel is collapsed, the preset name appears next to the "Show Weights" button.
-
-### Events Panel
-
-Lists all grade events that have been saved for the current class. Click **Show Events** to expand it. Each event shows the category, date, and note. Use the **Delete** button to remove an event and all the grades linked to it — a confirmation will appear before anything is deleted.
-
-### Student List
-
-Shows every student with their current category averages and final grade. Hover over any category average to see the individual grade entries behind it.
-
-**Entering grades after an event (e.g. homework returned today):**
-Click **Add Event**, choose the category, optionally add a date and note, then confirm. The list switches into edit mode — enter one grade per student. You can leave students blank to skip them. At the top and bottom of the list there is a **Save** button. When you save, the app will tell you exactly how many students have no grade and ask you to confirm.
-
-**To undo the last event:** press Ctrl+Z (or Cmd+Z on Mac). This removes all grades from that event and deletes the event record. The undo history is session-only — it resets when you close the app.
-
-**Working with a student:**
-Click on any student's name to open a small menu with the option to remove them from the class.
 
 ---
 
