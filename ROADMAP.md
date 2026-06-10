@@ -158,6 +158,8 @@ Multiple teachers interested — unhappy with existing software. Validated: clas
 - [x] Empty class state: centered "No students in this class yet." + prominent "+ Add Student" button
 - [x] Add-student row is a visible "+ Add Student" button that reveals the name entry (also fixes Phase 8 FocusOut item)
 - [x] Weight fields accept comma decimals
+- [x] German UI: all user-facing strings moved to `i18n.py` dictionary (`t(key)`), German active, English kept for a later language switch
+- [x] Default category names migrated to German: Schularbeiten, Mündlich, Hausübungen, Tests
 
 ### Flow rework (approach confirmed with user)
 - [ ] Kill the Enter Grades modal: "+" button on each category column header starts edit mode for that column directly, date defaults to today, date/note editable inline in the editing bar

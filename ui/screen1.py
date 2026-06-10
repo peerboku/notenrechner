@@ -2,6 +2,7 @@ import sys
 import tkinter
 import customtkinter as ctk
 from database import course_configs
+from i18n import t
 import undo_stack
 
 
@@ -38,15 +39,15 @@ class Screen1Frame(ctk.CTkFrame):
             command=self._open_settings_modal,
         ).pack(side="right")
 
-        ctk.CTkLabel(inner, text="Class:", font=ctk.CTkFont(size=13)).pack(
+        ctk.CTkLabel(inner, text=t("class_label"), font=ctk.CTkFont(size=13)).pack(
             side="left", padx=(0, 8)
         )
 
-        self._class_var = ctk.StringVar(value="— no class yet —")
+        self._class_var = ctk.StringVar(value=t("no_class_yet"))
         self._class_menu = ctk.CTkComboBox(
             inner,
             variable=self._class_var,
-            values=["— no class yet —"],
+            values=[t("no_class_yet")],
             command=self._on_class_selected,
             width=300,
             font=ctk.CTkFont(size=13),
@@ -55,7 +56,7 @@ class Screen1Frame(ctk.CTkFrame):
 
         ctk.CTkButton(
             inner,
-            text="New Class",
+            text=t("new_class"),
             width=110,
             command=self._open_new_class_modal,
         ).pack(side="left", padx=(12, 0))
@@ -112,8 +113,8 @@ class Screen1Frame(ctk.CTkFrame):
         self._config_map = {}
 
         if not configs:
-            self._class_menu.configure(values=["— no class yet —"])
-            self._class_var.set("— no class yet —")
+            self._class_menu.configure(values=[t("no_class_yet")])
+            self._class_var.set(t("no_class_yet"))
             self._selected_config_id = None
             self._weight_panel.load_config(None)
             self._events_panel.load_config(None)

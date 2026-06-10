@@ -102,11 +102,19 @@ CREATE TABLE IF NOT EXISTS grades (
 """
 
 _DEFAULT_CATEGORIES = [
-    ("Exams",    "continuous", None,    None,    1),
-    ("Oral",     "continuous", None,    None,    1),
-    ("Homework", "discrete",   "1,3,5", "+,~,−", 1),
-    ("Quizzes",  "discrete",   "1,3,5", "+,~,−", 1),
+    ("Schularbeiten", "continuous", None,    None,    1),
+    ("Mündlich",      "continuous", None,    None,    1),
+    ("Hausübungen",   "discrete",   "1,3,5", "+,~,−", 1),
+    ("Tests",         "discrete",   "1,3,5", "+,~,−", 1),
 ]
+
+# Old English default names → German (app went German-first after feedback round 1)
+_CATEGORY_RENAMES = {
+    "Exams":    "Schularbeiten",
+    "Oral":     "Mündlich",
+    "Homework": "Hausübungen",
+    "Quizzes":  "Tests",
+}
 
 
 def init_db() -> None:
@@ -127,6 +135,16 @@ def _migrate(conn) -> None:
             "UPDATE categories SET discrete_labels = '+,~,−' "
             "WHERE input_type = 'discrete' AND discrete_values = '1,3,5'"
         )
+
+    for old_name, new_name in _CATEGORY_RENAMES.items():
+        taken = conn.execute(
+            "SELECT 1 FROM categories WHERE name = ?", (new_name,)
+        ).fetchone()
+        if taken is None:
+            conn.execute(
+                "UPDATE categories SET name = ? WHERE name = ? AND is_default = 1",
+                (new_name, old_name),
+            )
 
 
 def _drop_old_schema(conn) -> None:

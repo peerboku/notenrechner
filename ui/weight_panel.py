@@ -5,6 +5,7 @@ from database.weight_presets import (
     get_all_presets, get_preset_weights, add_preset, set_preset_weights,
 )
 from calculation.validation import validate_weights
+from i18n import t
 
 
 class WeightPanel(ctk.CTkFrame):
@@ -28,8 +29,8 @@ class WeightPanel(ctk.CTkFrame):
 
         self._toggle_btn = ctk.CTkButton(
             header,
-            text="Hide Weights",
-            width=130, height=28,
+            text=t("hide_weights"),
+            width=190, height=28,
             fg_color="transparent",
             border_width=1,
             font=ctk.CTkFont(size=12),
@@ -56,11 +57,11 @@ class WeightPanel(ctk.CTkFrame):
         preset_row = ctk.CTkFrame(self._body, fg_color="transparent")
         preset_row.pack(fill="x", pady=(0, 10))
         ctk.CTkLabel(
-            preset_row, text="Load Preset:", font=ctk.CTkFont(size=12)
+            preset_row, text=t("load_preset"), font=ctk.CTkFont(size=12)
         ).pack(side="left", padx=(0, 8))
         self._preset_menu = ctk.CTkOptionMenu(
             preset_row,
-            values=["— no presets —"],
+            values=[t("no_presets_option")],
             command=self._on_preset_selected,
             width=200,
             font=ctk.CTkFont(size=12),
@@ -76,20 +77,20 @@ class WeightPanel(ctk.CTkFrame):
         bottom.pack(fill="x", pady=(12, 0))
 
         self._sum_label = ctk.CTkLabel(
-            bottom, text="Sum: —",
+            bottom, text=t("sum_empty"),
             font=ctk.CTkFont(size=12),
             width=110, anchor="w",
         )
         self._sum_label.pack(side="left", padx=(0, 12))
 
         self._save_btn = ctk.CTkButton(
-            bottom, text="Save", width=80, height=30,
+            bottom, text=t("save"), width=110, height=30,
             command=self._save, state="disabled",
         )
         self._save_btn.pack(side="left", padx=(0, 8))
 
         self._save_preset_btn = ctk.CTkButton(
-            bottom, text="Save as New Preset", width=170, height=30,
+            bottom, text=t("save_as_preset"), width=210, height=30,
             fg_color="transparent", border_width=1,
             font=ctk.CTkFont(size=12),
             command=self._open_save_preset_dialog,
@@ -99,11 +100,11 @@ class WeightPanel(ctk.CTkFrame):
     def _toggle(self):
         if self._expanded:
             self._body.pack_forget()
-            self._toggle_btn.configure(text="Show Weights")
+            self._toggle_btn.configure(text=t("show_weights"))
             self._preset_label.pack(side="left", padx=(12, 0))
         else:
             self._body.pack(fill="x", padx=16, pady=(8, 12))
-            self._toggle_btn.configure(text="Hide Weights")
+            self._toggle_btn.configure(text=t("hide_weights"))
             self._preset_label.pack_forget()
         self._expanded = not self._expanded
 
@@ -151,9 +152,9 @@ class WeightPanel(ctk.CTkFrame):
         presets = get_all_presets()
         self._presets = {p["name"]: p["id"] for p in presets}
         if presets:
-            values = ["— load a preset —"] + [p["name"] for p in presets]
+            values = [t("choose_preset_option")] + [p["name"] for p in presets]
         else:
-            values = ["— no presets —"]
+            values = [t("no_presets_option")]
         self._preset_menu.configure(values=values)
 
         # If the current config weights already match a preset, show that preset name.
@@ -171,8 +172,8 @@ class WeightPanel(ctk.CTkFrame):
 
     def _update_preset_label(self):
         name = self._preset_menu.get()
-        if name in ("— load a preset —", "— no presets —", ""):
-            text = "Custom" if self._config_id is not None else ""
+        if name in (t("choose_preset_option"), t("no_presets_option"), ""):
+            text = t("custom_weights") if self._config_id is not None else ""
         else:
             text = name
         self._preset_label.configure(text=text)
@@ -205,7 +206,7 @@ class WeightPanel(ctk.CTkFrame):
         weights = self._read_entries()
 
         if not weights:
-            self._sum_label.configure(text="Sum: —", text_color=("gray40", "gray60"))
+            self._sum_label.configure(text=t("sum_empty"), text_color=("gray40", "gray60"))
             self._save_btn.configure(state="disabled")
             self._save_preset_btn.pack_forget()
             return
@@ -213,7 +214,7 @@ class WeightPanel(ctk.CTkFrame):
         total = sum(weights.values())
         valid = validate_weights(weights)
         color = ("green3", "green2") if valid else ("red3", "red2")
-        self._sum_label.configure(text=f"Sum: {total:.1f}%", text_color=color)
+        self._sum_label.configure(text=t("sum_value", total=f"{total:.1f}"), text_color=color)
         self._save_btn.configure(state="normal" if valid else "disabled")
 
         if valid and not self._matches_any_preset(weights):
@@ -261,7 +262,7 @@ class SavePresetDialog(ctk.CTkToplevel):
         self._weights = weights
         self._on_saved = on_saved
 
-        self.title("Save Preset")
+        self.title(t("save_preset_title"))
         self.geometry("320x190")
         self.resizable(False, False)
         self.grab_set()
@@ -269,10 +270,10 @@ class SavePresetDialog(ctk.CTkToplevel):
 
     def _build(self):
         ctk.CTkLabel(
-            self, text="Preset name:", font=ctk.CTkFont(size=13)
+            self, text=t("preset_name_label"), font=ctk.CTkFont(size=13)
         ).pack(pady=(24, 8), padx=24, anchor="w")
 
-        self._name_entry = ctk.CTkEntry(self, placeholder_text="e.g. Standard")
+        self._name_entry = ctk.CTkEntry(self, placeholder_text=t("preset_name_placeholder"))
         self._name_entry.pack(fill="x", padx=24)
         self._name_entry.focus()
         self._name_entry.bind("<Return>", lambda _: self._submit())
@@ -283,16 +284,16 @@ class SavePresetDialog(ctk.CTkToplevel):
         btn_row = ctk.CTkFrame(self, fg_color="transparent")
         btn_row.pack(fill="x", padx=24, pady=(4, 20))
         ctk.CTkButton(
-            btn_row, text="Cancel",
+            btn_row, text=t("cancel"),
             fg_color="transparent", border_width=1,
             command=self.destroy,
         ).pack(side="left")
-        ctk.CTkButton(btn_row, text="Save", command=self._submit).pack(side="right")
+        ctk.CTkButton(btn_row, text=t("save"), command=self._submit).pack(side="right")
 
     def _submit(self):
         name = self._name_entry.get().strip()
         if not name:
-            self._error_label.configure(text="Name is required.")
+            self._error_label.configure(text=t("name_required"))
             return
         preset_id = add_preset(name)
         set_preset_weights(preset_id, self._weights)

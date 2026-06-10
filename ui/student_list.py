@@ -7,6 +7,7 @@ from database.enrollments import add_enrollment, delete_enrollment, get_enrollme
 from database.grade_events import add_event
 from calculation.grades import category_average, calculate_final_grade
 from calculation.grade_input import parse_grade_input, format_grade
+from i18n import t
 import undo_stack
 from undo_actions import AddEventAction
 
@@ -57,12 +58,12 @@ class StudentListPanel(ctk.CTkFrame):
         self._bottom_bar = ctk.CTkFrame(self, fg_color="transparent")
         # Not packed yet
         ctk.CTkButton(
-            self._bottom_bar, text="Cancel",
-            width=90, fg_color="transparent", border_width=1,
+            self._bottom_bar, text=t("cancel"),
+            width=100, fg_color="transparent", border_width=1,
             command=self._cancel_edit,
         ).pack(side="right", padx=(8, 0))
         ctk.CTkButton(
-            self._bottom_bar, text="Save", width=90,
+            self._bottom_bar, text=t("save"), width=100,
             command=self._save_event,
         ).pack(side="right")
 
@@ -71,14 +72,14 @@ class StudentListPanel(ctk.CTkFrame):
         self._add_row = ctk.CTkFrame(self, fg_color="transparent")
         self._add_row.pack(fill="x", padx=16, pady=(0, 12))
         self._add_btn = ctk.CTkButton(
-            self._add_row, text="+  Add Student", width=COL_NAME,
+            self._add_row, text=t("add_student"), width=COL_NAME,
             fg_color="transparent", border_width=1,
             state="disabled",
             command=self._show_add_entry,
         )
         self._add_btn.pack(side="left")
         self._add_entry = ctk.CTkEntry(
-            self._add_row, placeholder_text="Student name…", width=COL_NAME
+            self._add_row, placeholder_text=t("student_name_placeholder"), width=COL_NAME
         )
         # Not packed until the button is clicked
         self._add_entry.bind("<Return>", self._on_add_student)
@@ -105,7 +106,7 @@ class StudentListPanel(ctk.CTkFrame):
         for w in self._action_bar.winfo_children():
             w.destroy()
         self._add_event_btn = ctk.CTkButton(
-            self._action_bar, text="Enter Grades", width=120,
+            self._action_bar, text=t("enter_grades"), width=130,
             state="disabled",
             command=self._open_add_event_modal,
         )
@@ -116,24 +117,24 @@ class StudentListPanel(ctk.CTkFrame):
             w.destroy()
         ctk.CTkLabel(
             self._action_bar,
-            text=f"Editing: {self._edit_cat['name']}",
+            text=t("editing", name=self._edit_cat["name"]),
             font=ctk.CTkFont(size=13, weight="bold"),
             text_color=_EDIT_ACTIVE_COLOR,
         ).pack(side="left")
         if self._edit_cat["input_type"] == "continuous":
             ctk.CTkLabel(
                 self._action_bar,
-                text="You can type  2+ (= 1.75)   2-3 (= 2.5)   2,5 (= 2.5)",
+                text=t("notation_hint"),
                 font=ctk.CTkFont(size=12),
                 text_color=("gray40", "gray60"),
             ).pack(side="left", padx=(16, 0))
         ctk.CTkButton(
-            self._action_bar, text="Cancel",
-            width=90, fg_color="transparent", border_width=1,
+            self._action_bar, text=t("cancel"),
+            width=100, fg_color="transparent", border_width=1,
             command=self._cancel_edit,
         ).pack(side="right", padx=(8, 0))
         ctk.CTkButton(
-            self._action_bar, text="Save", width=90,
+            self._action_bar, text=t("save"), width=100,
             command=self._save_event,
         ).pack(side="right")
 
@@ -282,14 +283,14 @@ class StudentListPanel(ctk.CTkFrame):
         for w in self._header_frame.winfo_children():
             w.destroy()
 
-        _header_label(self._header_frame, "Name", COL_NAME, anchor="w", padx=(8, 0))
+        _header_label(self._header_frame, t("name_column"), COL_NAME, anchor="w", padx=(8, 0))
         for cat in self._active_cats:
             active = self._edit_mode and self._edit_cat and cat["id"] == self._edit_cat["id"]
             dim    = self._edit_mode and not active
             _header_label(self._header_frame, cat["name"], COL_CAT,
                           highlight=active, dim=dim)
         _divider(self._header_frame)
-        _header_label(self._header_frame, "Final", COL_FINAL, final=True)
+        _header_label(self._header_frame, t("final_column"), COL_FINAL, final=True)
 
     # ── Rows ──────────────────────────────────────────────────────────────────
 
@@ -312,13 +313,13 @@ class StudentListPanel(ctk.CTkFrame):
             empty.pack(pady=40)
             ctk.CTkLabel(
                 empty,
-                text="No students in this class yet.",
+                text=t("no_students"),
                 text_color=("gray50", "gray60"),
                 font=ctk.CTkFont(size=14),
             ).pack()
             if not self._edit_mode:
                 ctk.CTkButton(
-                    empty, text="+  Add Student", width=160, height=36,
+                    empty, text=t("add_student"), width=180, height=36,
                     command=self._show_add_entry,
                 ).pack(pady=(14, 0))
             return
@@ -413,12 +414,12 @@ class StudentListPanel(ctk.CTkFrame):
         menu = tkinter.Menu(self, tearoff=0)
         if self._on_view_grades:
             menu.add_command(
-                label="View Grades",
+                label=t("view_grades"),
                 command=lambda: self._on_view_grades(enrollment_id),
             )
             menu.add_separator()
         menu.add_command(
-            label="Remove",
+            label=t("remove"),
             foreground="red",
             command=lambda: _ConfirmRemoveDialog(
                 self, enrollment_id, on_confirmed=self._rebuild_rows,
@@ -436,15 +437,18 @@ class _ConfirmSaveDialog(ctk.CTkToplevel):
     def __init__(self, parent, blank_count: int, on_confirmed):
         super().__init__(parent)
         self._on_confirmed = on_confirmed
-        self.title("Confirm Save")
-        self.geometry("360x190")
+        self.title(t("confirm_save_title"))
+        self.geometry("380x190")
         self.resizable(False, False)
         self.grab_set()
 
-        noun = "student has" if blank_count == 1 else "students have"
+        if blank_count == 1:
+            text = t("confirm_blank_one")
+        else:
+            text = t("confirm_blank_many", count=blank_count)
         ctk.CTkLabel(
             self,
-            text=f"{blank_count} {noun} no grade for this event.\nSave anyway?",
+            text=text,
             font=ctk.CTkFont(size=13),
             justify="center",
         ).pack(pady=(36, 20), padx=24)
@@ -452,12 +456,12 @@ class _ConfirmSaveDialog(ctk.CTkToplevel):
         btn_row = ctk.CTkFrame(self, fg_color="transparent")
         btn_row.pack(fill="x", padx=24, pady=(0, 24))
         ctk.CTkButton(
-            btn_row, text="Cancel",
+            btn_row, text=t("cancel"),
             fg_color="transparent", border_width=1,
             command=self.destroy,
         ).pack(side="left")
         ctk.CTkButton(
-            btn_row, text="Save anyway",
+            btn_row, text=t("save_anyway"),
             command=self._confirm,
         ).pack(side="right")
 
@@ -473,8 +477,8 @@ class _ConfirmRemoveDialog(ctk.CTkToplevel):
         super().__init__(parent)
         self._enrollment_id = enrollment_id
         self._on_confirmed = on_confirmed
-        self.title("Remove Student")
-        self.geometry("340x175")
+        self.title(t("remove_student_title"))
+        self.geometry("380x175")
         self.resizable(False, False)
         self.grab_set()
         self._build()
@@ -482,7 +486,7 @@ class _ConfirmRemoveDialog(ctk.CTkToplevel):
     def _build(self):
         ctk.CTkLabel(
             self,
-            text="Remove this student from the class?\nAll their grades will also be deleted.",
+            text=t("remove_student_text"),
             font=ctk.CTkFont(size=13),
             justify="center",
         ).pack(pady=(32, 20), padx=24)
@@ -490,12 +494,12 @@ class _ConfirmRemoveDialog(ctk.CTkToplevel):
         btn_row = ctk.CTkFrame(self, fg_color="transparent")
         btn_row.pack(fill="x", padx=24, pady=(0, 20))
         ctk.CTkButton(
-            btn_row, text="Cancel",
+            btn_row, text=t("cancel"),
             fg_color="transparent", border_width=1,
             command=self.destroy,
         ).pack(side="left")
         ctk.CTkButton(
-            btn_row, text="Remove",
+            btn_row, text=t("remove"),
             fg_color=("red4", "red3"),
             hover_color=("red3", "red2"),
             command=self._confirm,

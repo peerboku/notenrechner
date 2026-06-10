@@ -1,4 +1,5 @@
 import customtkinter as ctk
+from i18n import t
 from database import course_configs
 from database.courses import get_or_create_course
 from database.school_years import get_or_create_school_year
@@ -9,14 +10,14 @@ class NewClassModal(ctk.CTkToplevel):
         super().__init__(parent)
         self._on_created = on_created
 
-        self.title("New Class")
+        self.title(t("new_class"))
         self.geometry("400x300")
         self.resizable(False, False)
         self._build()
 
     def _build(self):
         ctk.CTkLabel(
-            self, text="New Class", font=ctk.CTkFont(size=18, weight="bold")
+            self, text=t("new_class"), font=ctk.CTkFont(size=18, weight="bold")
         ).pack(pady=(24, 16))
 
         form = ctk.CTkFrame(self, fg_color="transparent")
@@ -24,9 +25,9 @@ class NewClassModal(ctk.CTkToplevel):
         form.columnconfigure(1, weight=1)
 
         fields = [
-            ("Class",       "e.g. 4B",      "_class_entry"),
-            ("Course",      "e.g. English", "_course_entry"),
-            ("School Year", "e.g. 2025/26", "_year_entry"),
+            (t("class_field"),  t("class_placeholder"),  "_class_entry"),
+            (t("course_field"), t("course_placeholder"), "_course_entry"),
+            (t("year_field"),   t("year_placeholder"),   "_year_entry"),
         ]
         for row_idx, (label, placeholder, attr) in enumerate(fields):
             ctk.CTkLabel(form, text=label, anchor="w").grid(
@@ -43,12 +44,12 @@ class NewClassModal(ctk.CTkToplevel):
         btn_row.pack(fill="x", padx=28, pady=(4, 24))
 
         ctk.CTkButton(
-            btn_row, text="Cancel",
+            btn_row, text=t("cancel"),
             fg_color="transparent", border_width=1,
             command=self.destroy,
         ).pack(side="left")
         ctk.CTkButton(
-            btn_row, text="Create",
+            btn_row, text=t("create"),
             command=self._submit,
         ).pack(side="right")
 
@@ -60,13 +61,13 @@ class NewClassModal(ctk.CTkToplevel):
         year_label   = self._year_entry.get().strip()
 
         if not class_label:
-            self._error_label.configure(text="Class label is required.")
+            self._error_label.configure(text=t("class_required"))
             return
         if not course_name:
-            self._error_label.configure(text="Course is required.")
+            self._error_label.configure(text=t("course_required"))
             return
         if not year_label:
-            self._error_label.configure(text="School year is required.")
+            self._error_label.configure(text=t("year_required"))
             return
 
         course_id = get_or_create_course(course_name)

@@ -1,11 +1,12 @@
 import customtkinter as ctk
+from i18n import t
 from database.weight_presets import get_all_presets, rename_preset, delete_preset
 
 
 class SettingsModal(ctk.CTkToplevel):
     def __init__(self, parent):
         super().__init__(parent)
-        self.title("Settings")
+        self.title(t("settings"))
         self.geometry("400x360")
         self.resizable(False, False)
         self.grab_set()
@@ -13,12 +14,12 @@ class SettingsModal(ctk.CTkToplevel):
 
     def _build(self):
         ctk.CTkLabel(
-            self, text="Settings", font=ctk.CTkFont(size=18, weight="bold")
+            self, text=t("settings"), font=ctk.CTkFont(size=18, weight="bold")
         ).pack(pady=(24, 16), padx=24, anchor="w")
 
         # ── Preset management ──────────────────────────────────────────────────
         ctk.CTkLabel(
-            self, text="Weight Presets",
+            self, text=t("weight_presets"),
             font=ctk.CTkFont(size=14, weight="bold"),
         ).pack(anchor="w", padx=24, pady=(0, 8))
 
@@ -39,7 +40,7 @@ class SettingsModal(ctk.CTkToplevel):
         if not presets:
             ctk.CTkLabel(
                 self._preset_frame,
-                text="No presets yet. Save one from the weight panel.",
+                text=t("no_presets_hint"),
                 text_color=("gray50", "gray60"),
                 font=ctk.CTkFont(size=13),
             ).pack(pady=10, anchor="w")
@@ -58,14 +59,14 @@ class SettingsModal(ctk.CTkToplevel):
         ).pack(side="left", fill="x", expand=True)
 
         ctk.CTkButton(
-            row, text="Rename", width=72, height=26,
+            row, text=t("rename"), width=100, height=26,
             fg_color="transparent", border_width=1,
             font=ctk.CTkFont(size=11),
             command=lambda p=preset: _RenameDialog(self, p, self._refresh_presets),
         ).pack(side="right", padx=(6, 0))
 
         ctk.CTkButton(
-            row, text="Delete", width=60, height=26,
+            row, text=t("delete"), width=80, height=26,
             fg_color="transparent", border_width=1,
             font=ctk.CTkFont(size=11),
             text_color=("red4", "red3"),
@@ -81,7 +82,7 @@ class _RenameDialog(ctk.CTkToplevel):
         super().__init__(parent)
         self._preset = preset
         self._on_renamed = on_renamed
-        self.title("Rename Preset")
+        self.title(t("rename_preset_title"))
         self.geometry("320x180")
         self.resizable(False, False)
         self.grab_set()
@@ -89,7 +90,7 @@ class _RenameDialog(ctk.CTkToplevel):
 
     def _build(self):
         ctk.CTkLabel(
-            self, text="New name:", font=ctk.CTkFont(size=13)
+            self, text=t("new_name_label"), font=ctk.CTkFont(size=13)
         ).pack(pady=(24, 6), padx=24, anchor="w")
 
         self._entry = ctk.CTkEntry(self)
@@ -105,16 +106,16 @@ class _RenameDialog(ctk.CTkToplevel):
         btn_row = ctk.CTkFrame(self, fg_color="transparent")
         btn_row.pack(fill="x", padx=24, pady=(0, 20))
         ctk.CTkButton(
-            btn_row, text="Cancel",
+            btn_row, text=t("cancel"),
             fg_color="transparent", border_width=1,
             command=self.destroy,
         ).pack(side="left")
-        ctk.CTkButton(btn_row, text="Rename", command=self._submit).pack(side="right")
+        ctk.CTkButton(btn_row, text=t("rename"), command=self._submit).pack(side="right")
 
     def _submit(self):
         name = self._entry.get().strip()
         if not name:
-            self._error.configure(text="Name is required.")
+            self._error.configure(text=t("name_required"))
             return
         rename_preset(self._preset["id"], name)
         self._on_renamed()
@@ -128,7 +129,7 @@ class _ConfirmDeleteDialog(ctk.CTkToplevel):
         super().__init__(parent)
         self._preset = preset
         self._on_deleted = on_deleted
-        self.title("Delete Preset")
+        self.title(t("delete_preset_title"))
         self.geometry("340x165")
         self.resizable(False, False)
         self.grab_set()
@@ -137,7 +138,7 @@ class _ConfirmDeleteDialog(ctk.CTkToplevel):
     def _build(self):
         ctk.CTkLabel(
             self,
-            text=f'Delete preset "{self._preset["name"]}"?\nThis cannot be undone.',
+            text=t("delete_preset_text", name=self._preset["name"]),
             font=ctk.CTkFont(size=13),
             justify="center",
         ).pack(pady=(30, 20), padx=24)
@@ -145,12 +146,12 @@ class _ConfirmDeleteDialog(ctk.CTkToplevel):
         btn_row = ctk.CTkFrame(self, fg_color="transparent")
         btn_row.pack(fill="x", padx=24, pady=(0, 20))
         ctk.CTkButton(
-            btn_row, text="Cancel",
+            btn_row, text=t("cancel"),
             fg_color="transparent", border_width=1,
             command=self.destroy,
         ).pack(side="left")
         ctk.CTkButton(
-            btn_row, text="Delete",
+            btn_row, text=t("delete"),
             fg_color=("red4", "red3"),
             hover_color=("red3", "red2"),
             command=self._confirm,

@@ -1,5 +1,6 @@
 import customtkinter as ctk
 import undo_stack
+from i18n import t
 from database.grade_events import get_events_with_category, delete_event
 from database.grades import delete_grades_by_event
 
@@ -22,8 +23,8 @@ class EventsPanel(ctk.CTkFrame):
 
         self._toggle_btn = ctk.CTkButton(
             header,
-            text="Show Events",
-            width=130, height=28,
+            text=t("show_events"),
+            width=190, height=28,
             fg_color="transparent",
             border_width=1,
             font=ctk.CTkFont(size=12),
@@ -53,10 +54,10 @@ class EventsPanel(ctk.CTkFrame):
     def _toggle(self):
         if self._expanded:
             self._body.pack_forget()
-            self._toggle_btn.configure(text="Show Events")
+            self._toggle_btn.configure(text=t("show_events"))
         else:
             self._body.pack(fill="x", padx=16, pady=(8, 12))
-            self._toggle_btn.configure(text="Hide Events")
+            self._toggle_btn.configure(text=t("hide_events"))
         self._expanded = not self._expanded
 
     # ── Config loading ────────────────────────────────────────────────────────
@@ -76,16 +77,16 @@ class EventsPanel(ctk.CTkFrame):
         events = [dict(e) for e in get_events_with_category(self._config_id)]
         count = len(events)
         if count == 0:
-            self._count_label.configure(text="(none)")
+            self._count_label.configure(text=t("events_none"))
         elif count == 1:
-            self._count_label.configure(text="(1 event)")
+            self._count_label.configure(text=t("events_one"))
         else:
-            self._count_label.configure(text=f"({count} events)")
+            self._count_label.configure(text=t("events_many", count=count))
 
         if not events:
             ctk.CTkLabel(
                 self._scroll,
-                text="No events yet.",
+                text=t("no_events"),
                 font=ctk.CTkFont(size=12),
                 text_color=("gray50", "gray60"),
                 anchor="w",
@@ -115,8 +116,8 @@ class EventsPanel(ctk.CTkFrame):
 
         ctk.CTkButton(
             row,
-            text="Delete",
-            width=64, height=24,
+            text=t("delete"),
+            width=80, height=24,
             fg_color="transparent",
             border_width=1,
             font=ctk.CTkFont(size=11),
@@ -151,7 +152,7 @@ class _ConfirmDeleteEventDialog(ctk.CTkToplevel):
         super().__init__(parent)
         self._on_confirm = on_confirm
 
-        self.title("Delete Event")
+        self.title(t("delete_event_title"))
         self.geometry("380x210")
         self.resizable(False, False)
         self.grab_set()
@@ -160,7 +161,7 @@ class _ConfirmDeleteEventDialog(ctk.CTkToplevel):
     def _build(self, label: str):
         ctk.CTkLabel(
             self,
-            text="Delete this event and all its grades?",
+            text=t("delete_event_text"),
             font=ctk.CTkFont(size=13, weight="bold"),
         ).pack(pady=(24, 8), padx=24)
 
@@ -174,7 +175,7 @@ class _ConfirmDeleteEventDialog(ctk.CTkToplevel):
 
         ctk.CTkLabel(
             self,
-            text="This cannot be undone.",
+            text=t("cannot_be_undone"),
             font=ctk.CTkFont(size=11),
             text_color=("red4", "red3"),
         ).pack(pady=(6, 16))
@@ -184,7 +185,7 @@ class _ConfirmDeleteEventDialog(ctk.CTkToplevel):
 
         ctk.CTkButton(
             btn_row,
-            text="Cancel",
+            text=t("cancel"),
             fg_color="transparent",
             border_width=1,
             command=self.destroy,
@@ -192,7 +193,7 @@ class _ConfirmDeleteEventDialog(ctk.CTkToplevel):
 
         ctk.CTkButton(
             btn_row,
-            text="Delete",
+            text=t("delete"),
             fg_color=("red4", "red3"),
             hover_color=("red3", "red2"),
             command=self._confirm,
