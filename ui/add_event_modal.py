@@ -7,7 +7,7 @@ class AddEventModal(ctk.CTkToplevel):
         self._categories = categories
         self._on_confirmed = on_confirmed
 
-        self.title("Add Event")
+        self.title("Enter Grades")
         self.geometry("400x300")
         self.resizable(False, False)
         self.grab_set()
@@ -15,7 +15,7 @@ class AddEventModal(ctk.CTkToplevel):
 
     def _build(self):
         ctk.CTkLabel(
-            self, text="Add Event", font=ctk.CTkFont(size=18, weight="bold")
+            self, text="Enter Grades", font=ctk.CTkFont(size=18, weight="bold")
         ).pack(pady=(24, 16))
 
         form = ctk.CTkFrame(self, fg_color="transparent")
@@ -58,7 +58,7 @@ class AddEventModal(ctk.CTkToplevel):
             fg_color="transparent", border_width=1,
             command=self.destroy,
         ).pack(side="left")
-        ctk.CTkButton(btn_row, text="Add Event", command=self._submit).pack(side="right")
+        ctk.CTkButton(btn_row, text="Start", command=self._submit).pack(side="right")
 
     def _submit(self):
         cat_name = self._cat_var.get()

@@ -141,6 +141,34 @@ No UI work required. Pure CI and packaging task. Done here so both platforms are
 - Better to show all grade entries with hover. Or with press on grade unten drunter wird aufegeklappt und zeigt alle einetragnene Noten für alle Category grades. 
 **Gate:** Do not start Phase 6 until layout and core flow are validated. Rework Screen 1 first if needed.
 
+### Results (June 2026)
+Multiple teachers interested — unhappy with existing software. Validated: class selection, weight panel, grade view. Pain points feed Phase 5c below.
+
+---
+
+## Phase 5c — Feedback Round 1 Rework
+
+### Quick wins
+- [x] Rename "Add Event" → "Enter Grades" everywhere the teacher sees it
+- [x] Grade notation parser: accept "2+" (= 1.75), "2-" (= 2.25), "2-3" / "2/3" (= 2.5), comma decimals ("2,5")
+- [x] Live feedback in grade inputs: red border while invalid, shorthand converts to numeric value on focus-out
+- [x] Notation hint shown in the editing bar for continuous categories
+- [x] Discrete categories display symbols (+ / ~ / −) instead of 1/3/5 — `discrete_labels` column added with migration; numbers stay internal
+- [x] Grade tooltips show symbols for discrete categories
+- [x] Empty class state: centered "No students in this class yet." + prominent "+ Add Student" button
+- [x] Add-student row is a visible "+ Add Student" button that reveals the name entry (also fixes Phase 8 FocusOut item)
+- [x] Weight fields accept comma decimals
+
+### Flow rework (approach confirmed with user)
+- [ ] Kill the Enter Grades modal: "+" button on each category column header starts edit mode for that column directly, date defaults to today, date/note editable inline in the editing bar
+- [ ] Replace hover tooltips with expand/collapse: clicking a student row expands a detail strip below showing all grades for all categories; action menu moves to a "⋯" button at row end
+
+### Apple-like design pass (after flow rework)
+- [ ] Light mode default
+- [ ] Student list as hero element; weight/events panels visually recede
+- [ ] Fewer borders, more whitespace, card-style containers
+- [ ] Plain language audit (no technical terms anywhere)
+
 ---
 
 ## Phase 6 — Redesigned UI: Screen 2 (Student Detail)

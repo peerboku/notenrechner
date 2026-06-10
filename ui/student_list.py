@@ -6,6 +6,7 @@ from database.students import add_student
 from database.enrollments import add_enrollment, delete_enrollment, get_enrollments_by_filter
 from database.grade_events import add_event
 from calculation.grades import category_average, calculate_final_grade
+from calculation.grade_input import parse_grade_input, format_grade
 import undo_stack
 from undo_actions import AddEventAction
 
@@ -65,14 +66,38 @@ class StudentListPanel(ctk.CTkFrame):
             command=self._save_event,
         ).pack(side="right")
 
-        # Add student (saved as self._add_row so edit mode can reorder it)
+        # Add student (saved as self._add_row so edit mode can reorder it).
+        # Shows a button by default; clicking it swaps in the name entry.
         self._add_row = ctk.CTkFrame(self, fg_color="transparent")
         self._add_row.pack(fill="x", padx=16, pady=(0, 12))
-        self._add_entry = ctk.CTkEntry(
-            self._add_row, placeholder_text="Add student…", width=COL_NAME
+        self._add_btn = ctk.CTkButton(
+            self._add_row, text="+  Add Student", width=COL_NAME,
+            fg_color="transparent", border_width=1,
+            state="disabled",
+            command=self._show_add_entry,
         )
-        self._add_entry.pack(side="left")
+        self._add_btn.pack(side="left")
+        self._add_entry = ctk.CTkEntry(
+            self._add_row, placeholder_text="Student name…", width=COL_NAME
+        )
+        # Not packed until the button is clicked
         self._add_entry.bind("<Return>", self._on_add_student)
+        self._add_entry.bind("<Escape>", lambda _e: self._show_add_button())
+        self._add_entry.bind("<FocusOut>", self._on_add_entry_focus_out)
+
+    def _show_add_entry(self):
+        self._add_btn.pack_forget()
+        self._add_entry.pack(side="left")
+        self._add_entry.focus_set()
+
+    def _show_add_button(self):
+        self._add_entry.delete(0, "end")
+        self._add_entry.pack_forget()
+        self._add_btn.pack(side="left")
+
+    def _on_add_entry_focus_out(self, _event=None):
+        if not self._add_entry.get().strip():
+            self._show_add_button()
 
     # ── Action bar states ─────────────────────────────────────────────────────
 
@@ -80,7 +105,7 @@ class StudentListPanel(ctk.CTkFrame):
         for w in self._action_bar.winfo_children():
             w.destroy()
         self._add_event_btn = ctk.CTkButton(
-            self._action_bar, text="Add Event", width=110,
+            self._action_bar, text="Enter Grades", width=120,
             state="disabled",
             command=self._open_add_event_modal,
         )
@@ -95,6 +120,13 @@ class StudentListPanel(ctk.CTkFrame):
             font=ctk.CTkFont(size=13, weight="bold"),
             text_color=_EDIT_ACTIVE_COLOR,
         ).pack(side="left")
+        if self._edit_cat["input_type"] == "continuous":
+            ctk.CTkLabel(
+                self._action_bar,
+                text="You can type  2+ (= 1.75)   2-3 (= 2.5)   2,5 (= 2.5)",
+                font=ctk.CTkFont(size=12),
+                text_color=("gray40", "gray60"),
+            ).pack(side="left", padx=(16, 0))
         ctk.CTkButton(
             self._action_bar, text="Cancel",
             width=90, fg_color="transparent", border_width=1,
@@ -119,6 +151,7 @@ class StudentListPanel(ctk.CTkFrame):
             self._config_data = course_configs.get_config_by_id(config_id)
             self._active_cats = _active_categories(config_id)
             self._add_event_btn.configure(state="normal")
+        self._add_btn.configure(state="normal" if config_id is not None else "disabled")
         self._rebuild_header()
         self._rebuild_rows()
 
@@ -142,7 +175,8 @@ class StudentListPanel(ctk.CTkFrame):
         self._edit_event_data = {"date": date, "note": note}
         self._edit_inputs = []
         self._set_action_bar_edit()
-        self._add_entry.configure(state="disabled")
+        self._show_add_button()
+        self._add_btn.configure(state="disabled")
         self._rebuild_header()
         self._rebuild_rows()
         # Insert bottom bar between scroll and add_row (avoid after=/before= — CTkScrollableFrame
@@ -160,7 +194,7 @@ class StudentListPanel(ctk.CTkFrame):
         self._bottom_bar.pack_forget()
         if self._config_id is not None:
             self._add_event_btn.configure(state="normal")
-        self._add_entry.configure(state="normal")
+            self._add_btn.configure(state="normal")
         self._rebuild_header()
         self._rebuild_rows()
 
@@ -173,32 +207,24 @@ class StudentListPanel(ctk.CTkFrame):
         if not self._edit_cat:
             return
 
-        valid_discrete: set[str] = set()
+        label_to_value: dict[str, float] = {}
         if self._edit_cat["input_type"] == "discrete" and self._edit_cat["discrete_values"]:
-            valid_discrete = {v.strip() for v in self._edit_cat["discrete_values"].split(",")}
+            label_to_value = {
+                label: float(value)
+                for label, value in _discrete_pairs(self._edit_cat)
+            }
 
         entries: list[tuple[int, float | None]] = []
         blank_count = 0
 
         for enrollment_id, widget in self._edit_inputs:
             if isinstance(widget, ctk.CTkSegmentedButton):
-                val_str = widget.get()
-                if val_str in valid_discrete:
-                    entries.append((enrollment_id, float(val_str)))
-                else:
-                    entries.append((enrollment_id, None))
-                    blank_count += 1
+                value = label_to_value.get(widget.get())
             else:
-                val_str = widget.get().strip()
-                if val_str:
-                    try:
-                        entries.append((enrollment_id, float(val_str)))
-                    except ValueError:
-                        entries.append((enrollment_id, None))
-                        blank_count += 1
-                else:
-                    entries.append((enrollment_id, None))
-                    blank_count += 1
+                value = parse_grade_input(widget.get())
+            entries.append((enrollment_id, value))
+            if value is None:
+                blank_count += 1
 
         if blank_count > 0:
             _ConfirmSaveDialog(
@@ -282,12 +308,19 @@ class StudentListPanel(ctk.CTkFrame):
         )
 
         if not enrollments:
+            empty = ctk.CTkFrame(self._scroll, fg_color="transparent")
+            empty.pack(pady=40)
             ctk.CTkLabel(
-                self._scroll,
-                text="No students yet.",
+                empty,
+                text="No students in this class yet.",
                 text_color=("gray50", "gray60"),
-                font=ctk.CTkFont(size=13),
-            ).pack(pady=24)
+                font=ctk.CTkFont(size=14),
+            ).pack()
+            if not self._edit_mode:
+                ctk.CTkButton(
+                    empty, text="+  Add Student", width=160, height=36,
+                    command=self._show_add_entry,
+                ).pack(pady=(14, 0))
             return
 
         for i, enrollment in enumerate(enrollments):
@@ -331,7 +364,12 @@ class StudentListPanel(ctk.CTkFrame):
                                  COL_CAT, dim=dim)
                 cat_rows = by_cat_rows.get(cat["id"])
                 if cat_rows and not self._edit_mode:
-                    _bind_grade_tooltip(cell_lbl, cat_rows)
+                    value_to_label = None
+                    if cat["input_type"] == "discrete" and cat["discrete_values"]:
+                        value_to_label = {
+                            float(v): l for l, v in _discrete_pairs(cat)
+                        }
+                    _bind_grade_tooltip(cell_lbl, cat_rows, value_to_label)
 
         _divider(row)
 
@@ -477,12 +515,26 @@ def _active_categories(config_id: int) -> list:
     return [c for c in get_all_categories() if weights.get(c["id"], 0) > 0]
 
 
+def _discrete_pairs(cat) -> list[tuple[str, str]]:
+    """Return (display_label, value_string) pairs for a discrete category.
+
+    Falls back to the raw values as labels when no labels are configured
+    or the label count doesn't match.
+    """
+    values = [v.strip() for v in cat["discrete_values"].split(",")]
+    labels_raw = cat["discrete_labels"] if "discrete_labels" in cat.keys() else None
+    labels = [l.strip() for l in labels_raw.split(",")] if labels_raw else values
+    if len(labels) != len(values):
+        labels = values
+    return list(zip(labels, values))
+
+
 def _input_widget(parent, cat: dict):
     """Return a grade input widget appropriate for the category input type."""
     if cat["input_type"] == "discrete" and cat["discrete_values"]:
-        values = [v.strip() for v in cat["discrete_values"].split(",")]
+        labels = [label for label, _ in _discrete_pairs(cat)]
         seg = ctk.CTkSegmentedButton(
-            parent, values=values, width=COL_CAT, dynamic_resizing=False
+            parent, values=labels, width=COL_CAT, dynamic_resizing=False
         )
         seg.set("")   # nothing selected = skipped
         seg.pack(side="left", padx=2, pady=4)
@@ -490,7 +542,31 @@ def _input_widget(parent, cat: dict):
     else:
         entry = ctk.CTkEntry(parent, width=COL_CAT, justify="center")
         entry.pack(side="left", padx=2, pady=4)
+        _wire_grade_entry_feedback(entry)
         return entry
+
+
+def _wire_grade_entry_feedback(entry: ctk.CTkEntry) -> None:
+    """Live-validate teacher notation: red border while invalid, and convert
+    shorthand ("2+", "2-3", "2,5") to its numeric value when focus leaves."""
+    default_border = entry.cget("border_color")
+
+    def _on_key(_e):
+        text = entry.get().strip()
+        invalid = bool(text) and parse_grade_input(text) is None
+        entry.configure(border_color=("red3", "red2") if invalid else default_border)
+
+    def _on_focus_out(_e):
+        text = entry.get().strip()
+        value = parse_grade_input(text)
+        if value is not None:
+            normalized = format_grade(value)
+            if normalized != text:
+                entry.delete(0, "end")
+                entry.insert(0, normalized)
+
+    entry.bind("<KeyRelease>", _on_key)
+    entry.bind("<FocusOut>", _on_focus_out)
 
 
 def _divider(parent):
@@ -534,8 +610,14 @@ def _cell(parent, text, width, anchor="center", bold=False, padx=(0, 0),
     return lbl
 
 
-def _bind_grade_tooltip(widget: ctk.CTkLabel, grades: list[dict]) -> None:
-    """Bind a hover popover showing grade entries (date + value) to a cell label."""
+def _bind_grade_tooltip(
+    widget: ctk.CTkLabel, grades: list[dict],
+    value_to_label: dict[float, str] | None = None,
+) -> None:
+    """Bind a hover popover showing grade entries (date + value) to a cell label.
+
+    For discrete categories, value_to_label maps numeric values back to the
+    teacher-facing symbols (e.g. 1.0 -> "+")."""
     tip: list = [None]
     after_id: list = [None]
 
@@ -547,7 +629,10 @@ def _bind_grade_tooltip(widget: ctk.CTkLabel, grades: list[dict]) -> None:
         lines = []
         for g in grades:
             val = g["value"]
-            val_str = str(int(val)) if val == int(val) else f"{val:.1f}"
+            if value_to_label and val in value_to_label:
+                val_str = value_to_label[val]
+            else:
+                val_str = format_grade(val)
             date_str = g["date"] if g["date"] else "—"
             lines.append(f"{date_str}   {val_str}")
         text = "\n".join(lines)

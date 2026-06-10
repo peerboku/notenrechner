@@ -196,7 +196,7 @@ class WeightPanel(ctk.CTkFrame):
         result = {}
         for entry, cat in zip(self._entries, self._categories):
             try:
-                result[cat["id"]] = float(entry.get())
+                result[cat["id"]] = float(entry.get().replace(",", "."))
             except ValueError:
                 return None
         return result
