@@ -11,6 +11,7 @@ CREATE TABLE IF NOT EXISTS categories (
     name            TEXT NOT NULL UNIQUE,
     input_type      TEXT NOT NULL CHECK(input_type IN ('continuous', 'discrete')),
     discrete_values TEXT,
+    discrete_labels TEXT,
     is_default      INTEGER NOT NULL DEFAULT 0
 );
 
@@ -101,10 +102,10 @@ CREATE TABLE IF NOT EXISTS grades (
 """
 
 _DEFAULT_CATEGORIES = [
-    ("Exams",    "continuous", None,    1),
-    ("Oral",     "continuous", None,    1),
-    ("Homework", "discrete",   "1,3,5", 1),
-    ("Quizzes",  "discrete",   "1,3,5", 1),
+    ("Exams",    "continuous", None,    None,    1),
+    ("Oral",     "continuous", None,    None,    1),
+    ("Homework", "discrete",   "1,3,5", "+,~,−", 1),
+    ("Quizzes",  "discrete",   "1,3,5", "+,~,−", 1),
 ]
 
 
@@ -112,8 +113,20 @@ def init_db() -> None:
     conn = get_connection()
     _drop_old_schema(conn)
     conn.executescript(_SCHEMA)
+    _migrate(conn)
     _seed(conn)
     conn.commit()
+
+
+def _migrate(conn) -> None:
+    """In-place migrations for databases created before a column existed."""
+    cat_cols = {r[1] for r in conn.execute("PRAGMA table_info(categories)").fetchall()}
+    if "discrete_labels" not in cat_cols:
+        conn.execute("ALTER TABLE categories ADD COLUMN discrete_labels TEXT")
+        conn.execute(
+            "UPDATE categories SET discrete_labels = '+,~,−' "
+            "WHERE input_type = 'discrete' AND discrete_values = '1,3,5'"
+        )
 
 
 def _drop_old_schema(conn) -> None:
@@ -135,7 +148,8 @@ def _seed(conn) -> None:
     ).fetchone()[0]
     if existing == 0:
         conn.executemany(
-            "INSERT INTO categories (name, input_type, discrete_values, is_default) VALUES (?, ?, ?, ?)",
+            "INSERT INTO categories (name, input_type, discrete_values, discrete_labels, is_default)"
+            " VALUES (?, ?, ?, ?, ?)",
             _DEFAULT_CATEGORIES,
         )
     if conn.execute("SELECT value FROM settings WHERE key = 'grading_scale'").fetchone() is None:
