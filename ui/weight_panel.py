@@ -25,15 +25,17 @@ class WeightPanel(ctk.CTkFrame):
 
     def _build_header(self):
         header = ctk.CTkFrame(self, fg_color="transparent")
-        header.pack(fill="x", padx=16, pady=(10, 0))
+        header.pack(fill="x", padx=12, pady=(6, 0))
 
         self._toggle_btn = ctk.CTkButton(
             header,
             text=t("hide_weights"),
-            width=190, height=28,
+            width=170, height=24,
             fg_color="transparent",
-            border_width=1,
-            font=ctk.CTkFont(size=12),
+            border_width=0,
+            hover_color=("gray78", "gray28"),
+            text_color=("gray45", "gray60"),
+            font=ctk.CTkFont(size=11),
             command=self._toggle,
         )
         self._toggle_btn.pack(side="left")
@@ -51,7 +53,7 @@ class WeightPanel(ctk.CTkFrame):
 
     def _build_body(self):
         self._body = ctk.CTkFrame(self, fg_color="transparent")
-        self._body.pack(fill="x", padx=16, pady=(8, 12))
+        self._body.pack(fill="x", padx=12, pady=(6, 10))
 
         # Preset row
         preset_row = ctk.CTkFrame(self._body, fg_color="transparent")
@@ -103,7 +105,7 @@ class WeightPanel(ctk.CTkFrame):
             self._toggle_btn.configure(text=t("show_weights"))
             self._preset_label.pack(side="left", padx=(12, 0))
         else:
-            self._body.pack(fill="x", padx=16, pady=(8, 12))
+            self._body.pack(fill="x", padx=12, pady=(6, 10))
             self._toggle_btn.configure(text=t("hide_weights"))
             self._preset_label.pack_forget()
         self._expanded = not self._expanded

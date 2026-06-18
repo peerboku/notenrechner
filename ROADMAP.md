@@ -167,17 +167,24 @@ Multiple teachers interested — unhappy with existing software. Validated: clas
 - [x] Detail strip: proper table layout — one row per date, columns Notiz | Datum | [categories]; multiple grades of the same category on the same date appear as separate rows
 
 ### Apple-like design pass (after flow rework)
-- [ ] Light mode default
-- [ ] Student list as hero element; weight/events panels visually recede
+- [x] Light mode default: it was decided to keep dark mode
+- [x] Student list as hero element; weight/events panels visually recede (toggle buttons muted, panels compact)
+- [ ] "Einträge anzeigen" button sits alone with empty space next to it — needs a visual anchor or count always visible so it doesn't feel orphaned
+- [ ] Strict color hierarchy: only one primary blue button visible at a time; blue currently does three jobs (toggle, save, enter grades) — decide on one primary action per context and demote the rest
+- [ ] Fix detail strip cells: empty Notiz and empty Datum show placeholder text instead of blank/dash (e.g. "—" or no cell at all)
+- [ ] Weight panel sum: display as integer when it's a whole number (e.g. "100%" not "100.0%")
+- [ ] Add chevron (▶ / ▼) to student name cells so it's obvious the row is expandable
+- [ ] Replace top-bar class dropdown with a left sidebar list — classes shown as a persistent list, selected class highlighted
+- [ ] Student table: inset/grouped list style — rounded corners on the table, subtle row separators instead of alternating backgrounds
 - [ ] Fewer borders, more whitespace, card-style containers
 - [ ] Plain language audit (no technical terms anywhere)
-- [ ] Better cue that leads naturally to grade adding 
+- [ ] Better cue that leads naturally to grade adding
 
 ## Polish 
 - [ ] ? - Button next to the grade or more visible features that explains how grades can be typed in 
 - [ ] Little tutorial with arrows when starting the app for first time
 - [ ] wenn kein Datum eingetragen ist, anstatt "-" Textblock "kein Datum eingetragen"
-
+- [ ] Add light mode option to settings 
 ---
 
 ## Phase 6 — Redesigned UI: Screen 2 (Student Detail)

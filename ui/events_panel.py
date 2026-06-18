@@ -19,15 +19,13 @@ class EventsPanel(ctk.CTkFrame):
 
     def _build_header(self):
         header = ctk.CTkFrame(self, fg_color="transparent")
-        header.pack(fill="x", padx=16, pady=(10, 0))
+        header.pack(fill="x", padx=12, pady=(6, 0))
 
         self._toggle_btn = ctk.CTkButton(
             header,
             text=t("show_events"),
-            width=190, height=28,
-            fg_color="transparent",
-            border_width=1,
-            font=ctk.CTkFont(size=12),
+            width=170, height=24,
+            font=ctk.CTkFont(size=11),
             command=self._toggle,
         )
         self._toggle_btn.pack(side="left")
@@ -56,7 +54,7 @@ class EventsPanel(ctk.CTkFrame):
             self._body.pack_forget()
             self._toggle_btn.configure(text=t("show_events"))
         else:
-            self._body.pack(fill="x", padx=16, pady=(8, 12))
+            self._body.pack(fill="x", padx=12, pady=(6, 10))
             self._toggle_btn.configure(text=t("hide_events"))
         self._expanded = not self._expanded
 

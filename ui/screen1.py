@@ -67,7 +67,7 @@ class Screen1Frame(ctk.CTkFrame):
         from ui.weight_panel import WeightPanel
         from ui.events_panel import EventsPanel
 
-        row = ctk.CTkFrame(self, fg_color=("gray92", "gray20"), corner_radius=0)
+        row = ctk.CTkFrame(self, fg_color=("gray86", "gray18"), corner_radius=0)
         row.pack(fill="x")
 
         self._weight_panel = WeightPanel(
@@ -92,7 +92,7 @@ class Screen1Frame(ctk.CTkFrame):
 
     def _build_separator(self):
         ctk.CTkFrame(
-            self, height=1, fg_color=("gray75", "gray30"), corner_radius=0
+            self, height=2, fg_color=("gray65", "gray35"), corner_radius=0
         ).pack(fill="x")
 
     # ── Student list ──────────────────────────────────────────────────────────
