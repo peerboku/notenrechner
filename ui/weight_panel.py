@@ -216,7 +216,8 @@ class WeightPanel(ctk.CTkFrame):
         total = sum(weights.values())
         valid = validate_weights(weights)
         color = ("green3", "green2") if valid else ("red3", "red2")
-        self._sum_label.configure(text=t("sum_value", total=f"{total:.1f}"), text_color=color)
+        total_str = str(int(total)) if total == int(total) else f"{total:.1f}"
+        self._sum_label.configure(text=t("sum_value", total=total_str), text_color=color)
         self._save_btn.configure(state="normal" if valid else "disabled")
 
         if valid and not self._matches_any_preset(weights):
