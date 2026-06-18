@@ -162,8 +162,9 @@ Multiple teachers interested — unhappy with existing software. Validated: clas
 - [x] Default category names migrated to German: Schularbeiten, Mündlich, Hausübungen, Tests
 
 ### Flow rework (approach confirmed with user)
-- [ ] Kill the Enter Grades modal: "+" button on each category column header starts edit mode for that column directly, date defaults to today, date/note editable inline in the editing bar
-- [ ] Replace hover tooltips with expand/collapse: clicking a student row expands a detail strip below showing all grades for all categories; action menu moves to a "⋯" button at row end
+- [x] Kill the Enter Grades modal: clicking a category column header starts edit mode for that column directly, date defaults to today, date/note editable inline in the editing bar
+- [x] Replace hover tooltips with expand/collapse: clicking a student name expands a detail strip below showing all grades for all categories; action menu moves to a "⋯" button at row end
+- [x] Detail strip: proper table layout — one row per date, columns Notiz | Datum | [categories]; multiple grades of the same category on the same date appear as separate rows
 
 ### Apple-like design pass (after flow rework)
 - [ ] Light mode default
