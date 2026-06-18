@@ -14,10 +14,6 @@ Liebe Grüße, Peer
 
 ---
 
-> **Hinweis:** In der aktuellen Version sind sowohl die App selbst als auch diese Beschreibung noch auf Englisch. Eine deutsche Benutzeroberfläche ist für eine spätere Version geplant.
-
----
-
 ![Notenrechner Screenshot](docs/screenshot_notenrechner_v.0.5.0.png)
 
 ---
@@ -64,27 +60,29 @@ Any thoughts are welcome: what felt confusing, what worked well, what you wish t
 
 ---
 
-## Current Version (v0.5.0)
+## Aktuelle Version (v0.5.2)
 
-This is the first release of the redesigned interface. The previous version (v0.3.x) was evaluated and found to require too many steps for everyday use. This version is built around a single main screen that matches how a teacher actually works with a class.
+Die App ist jetzt vollständig auf Deutsch. Die Oberfläche wurde nach einer Feedbackrunde mit Lehrerinnen und Lehrern überarbeitet — Schwerpunkt: einfacheres Eintragen von Noten und bessere Übersicht.
 
-**What works in this version:**
+**Was in dieser Version funktioniert:**
 
-- Create classes (class label + course + school year)
-- Set category weights with reusable presets — the app remembers which preset is applied to each class
-- Add students to a class by name
-- Enter grades class-wide after an event (e.g. a test returned — one grade per student at once)
-- View category averages and final grades live in the student list
-- Hover over any category average to see the individual grades behind it
-- Manage and delete past grade events from the Events panel
-- Manage weight presets (create, rename, delete) via the Settings gear icon
-- Undo the last grade event with Ctrl+Z (Windows) or Cmd+Z (Mac)
+- Klassen anlegen (Klasse, Fach, Schuljahr)
+- Gewichtungen setzen und als Vorlagen speichern
+- Schülerinnen und Schüler zur Klasse hinzufügen
+- Noten klassenweise eintragen: Kategorie-Spalte anklicken, Datum und Notiz optional ergänzen, dann eine Note pro Schüler
+- Kurznotation bei der Eingabe: `2+` (= 1,75), `2-` (= 2,25), `2-3` (= 2,5), Komma als Dezimalzeichen
+- Diskrete Kategorien (Hausübungen, Tests) mit Symbolen: `+` / `~` / `−`
+- Kategoriedurchschnitte und Endnote werden live angezeigt
+- Klick auf Schülername → alle Noten werden aufgeklappt (Tabelle: Notiz | Datum | Kategorie-Spalten)
+- Einträge löschen über das Einträge-Panel
+- Gewichtungsvorlagen verwalten (erstellen, umbenennen, löschen) über das Zahnrad-Symbol
+- Undo mit Ctrl+Z (Windows) bzw. Cmd+Z (Mac)
 
-**Not yet available (coming in a future release):**
+**Noch nicht verfügbar (kommt in einer späteren Version):**
 
-- Full grade detail view per student (Screen 2)
-- Individual weight overrides per student
-- Print / PDF export
+- Detailansicht pro Schüler (Screen 2)
+- Individuelle Gewichtungsausnahmen pro Schüler
+- Drucken / PDF-Export
 
 ---
 
@@ -92,7 +90,7 @@ This is the first release of the redesigned interface. The previous version (v0.
 
 At the top, select which class you are working with using the dropdown. Use **New Class** to set one up.
 
-**Add students** to your class in the text field on the bottom left. 
+**Schüler hinzufügen:** Klicke auf den Button „+ Schüler hinzufügen" am unteren Rand der Liste.
 
 ### Weight Panel
 
@@ -102,7 +100,7 @@ Use **Load Preset** to apply a saved weight configuration. If you enter weights 
 
 If you don't want to use all categories, just put 0 % for that category and it will automatically disappear from the student list viewer.
 
-f.ex.: Only Exams (Klausuren) and Oral (Mündlich).
+Beispiel: Nur Schularbeiten und Mündlich — Hausübungen und Tests auf 0 % setzen.
 
 ![Adjust weigths screenhot](docs/screenshot_notenrechner_adjust_weights.png)
 
@@ -111,17 +109,22 @@ f.ex.: Only Exams (Klausuren) and Oral (Mündlich).
 
 Lists all grade events that have been saved for the current class. Click **Show Events** to expand it. Each event shows the category, date, and note. Use the **Delete** button to remove an event and all the grades linked to it — a confirmation will appear before anything is deleted.
 
-### Student List
+### Schülerliste
 
-Shows every student with their current category averages and final grade. Hover over any category average to see the individual grade entries behind it.
+Zeigt alle Schülerinnen und Schüler mit den aktuellen Kategoriedurchschnitten und der Endnote.
 
-**Entering grades after an event (e.g. homework returned today):**
-Click **Add Event**, choose the category, optionally add a date and note, then confirm. The list switches into edit mode — enter one grade per student. You can leave students blank to skip them. At the top and bottom of the list there is a **Save** button. When you save, the app will tell you exactly how many students have no grade and ask you to confirm.
+**Noten eintragen:**
+Klicke auf den Spaltenkopf einer Kategorie (z. B. „Schularbeiten"). Die Liste wechselt in den Eingabemodus — du siehst eine Eingabezeile pro Schüler. Datum und Notiz kannst du optional in der Leiste oben ergänzen (Datum ist mit dem heutigen Tag vorausgefüllt). Schüler ohne Note einfach freilassen. Oben und unten gibt es jeweils einen **Speichern**-Button. Beim Speichern wird angezeigt, wie viele Schüler keine Note haben, und du kannst bestätigen.
 
-**To undo the last event:** press Ctrl+Z (or Cmd+Z on Mac). This removes all grades from that event and deletes the event record. The undo history is session-only — it resets when you close the app.
+Kontinuierliche Kategorien (Schularbeiten, Mündlich) akzeptieren auch Kurznotationen: `2+` (= 1,75), `2-` (= 2,25), `2-3` oder `2/3` (= 2,5), Komma als Dezimaltrennzeichen.
 
-**Working with a student:**
-Click on any student's name to open a small menu with the option to remove them from the class.
+**Noten eines Schülers ansehen:**
+Klicke auf den Namen des Schülers — darunter öffnet sich eine Tabelle mit allen eingetragenen Noten, geordnet nach Datum (neueste zuerst), mit Spalten für Notiz, Datum und jede Kategorie.
+
+**Aktionsmenü (Schüler entfernen etc.):**
+Klicke auf den **⋯**-Button am rechten Ende der Zeile.
+
+**Letzten Eintrag rückgängig machen:** Ctrl+Z (Windows) bzw. Cmd+Z (Mac). Entfernt alle Noten des letzten Eintrags. Die Undo-Historie gilt nur für die aktuelle Sitzung.
 
 ---
 
@@ -129,28 +132,28 @@ Click on any student's name to open a small menu with the option to remove them 
 
 Every student receives one final grade per course. That grade is built from up to four categories:
 
-| Category | Input type | Valid values |
+| Kategorie | Eingabe | Mögliche Werte |
 |---|---|---|
-| Exams | Continuous | Any value (e.g. 1.0 – 5.0) |
-| Oral | Continuous | Any value (e.g. 1.0 – 5.0) |
-| Homework | Discrete | Good (1), Okay (3), or Bad (5) only |
-| Quizzes | Discrete | Good (1), Okay (3), or Bad (5) only|
+| Schularbeiten | Kontinuierlich | Beliebige Zahl, z. B. 1 – 5 (auch 2+, 2-3 etc.) |
+| Mündlich | Kontinuierlich | Beliebige Zahl, z. B. 1 – 5 |
+| Hausübungen | Diskret | + (gut = 1), ~ (okay = 3), − (schlecht = 5) |
+| Tests | Diskret | + (gut = 1), ~ (okay = 3), − (schlecht = 5) |
 
-**Category grade** = average of all individual entries in that category.
+**Kategoriedurchschnitt** = Mittelwert aller Einträge in dieser Kategorie.
 
-**Final grade** = weighted average of the category grades, rounded to one decimal place.
+**Endnote** = gewichteter Durchschnitt der Kategoriedurchschnitte, gerundet auf eine Nachkommastelle.
 
-Categories with a weight of 0% are hidden from the student list and excluded from the final grade. Categories with no grades entered are also excluded.
+Kategorien mit Gewichtung 0 % werden in der Schülerliste ausgeblendet und nicht in die Endnote eingerechnet. Kategorien ohne eingetragene Noten werden ebenfalls nicht berücksichtigt.
 
-Example with weights Exams 50%, Oral 20%, Homework 15%, Quizzes 15%:
+Beispiel mit Gewichtungen Schularbeiten 50 %, Mündlich 20 %, Hausübungen 15 %, Tests 15 %:
 
 ```
-Exams average:    2.0  × 50% = 1.00
-Oral average:     3.0  × 20% = 0.60
-Homework average: 2.33 × 15% = 0.35
-Quizzes average:  1.67 × 15% = 0.25
+Schularbeiten-Ø:  2,0  × 50 % = 1,00
+Mündlich-Ø:       3,0  × 20 % = 0,60
+Hausübungen-Ø:    2,33 × 15 % = 0,35
+Tests-Ø:          1,67 × 15 % = 0,25
 
-Final grade: 1.00 + 0.60 + 0.35 + 0.25 = 2.2
+Endnote: 1,00 + 0,60 + 0,35 + 0,25 = 2,2
 ```
 
 ---
