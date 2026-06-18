@@ -166,25 +166,32 @@ Multiple teachers interested — unhappy with existing software. Validated: clas
 - [x] Replace hover tooltips with expand/collapse: clicking a student name expands a detail strip below showing all grades for all categories; action menu moves to a "⋯" button at row end
 - [x] Detail strip: proper table layout — one row per date, columns Notiz | Datum | [categories]; multiple grades of the same category on the same date appear as separate rows
 
-### Apple-like design pass (after flow rework)
-- [x] Light mode default: it was decided to keep dark mode
+### Design rethink — Paper Gradebook Style
+> Design goal shifted: audience is older teachers, not tech-savvy users. Drop iOS/Apple references. Aim for the look and feel of a paper gradebook — familiar, readable, no surprises.
+
+#### Design principles
+- [ ] **Grid lines, not cards** — visible borders and table rules everywhere; no shadow-only floating panels; the student list should look like a ruled table
+- [ ] **Warm muted palette** — replace dark mode with soft off-white or cream background; single calm accent color (navy or forest green); no pure white, no pure black
+- [ ] **One accent color, one purpose** — the accent is used identically everywhere for the same meaning (e.g. always forest green for the primary save action); never repurposed as a label color or decoration elsewhere; reduces relearning
+- [ ] **Persistent labeled navigation** — no icon-only nav, no hamburger menus; if there are multiple views, show them as visible text tabs at all times; sidebar class list already moves in this direction
+- [ ] **Predictable button placement** — Save always in the same corner, Cancel always in the same spot across every screen and modal; older users build spatial memory faster than icon/concept memory
+
+#### Previously planned — still valid under new direction
 - [x] Student list as hero element; weight/events panels visually recede (toggle buttons muted, panels compact)
-- [x] "Einträge anzeigen" button sits alone with empty space next to it — removed toggle, events list is now always visible with a static "Einträge" label + count
-- [ ] Strict color hierarchy: only one primary blue button visible at a time; blue currently does three jobs (toggle, save, enter grades) — decide on one primary action per context and demote the rest
-- [ ] Fix detail strip cells: empty Notiz and empty Datum show placeholder text instead of blank/dash (e.g. "—" or no cell at all)
-- [x] Weight panel sum: display as integer when it's a whole number (e.g. "100%" not "100.0%")
-- [ ] Add chevron (▶ / ▼) to student name cells so it's obvious the row is expandable
-- [x] Replace top-bar class dropdown with a left sidebar list — classes shown as a persistent list, selected class highlighted
-- [ ] Student table: inset/grouped list style — rounded corners on the table, subtle row separators instead of alternating backgrounds
-- [ ] Fewer borders, more whitespace, card-style containers
+- [x] "Einträge anzeigen" removed toggle — events list always visible
+- [x] Weight panel sum: display as integer when whole number
+- [x] Replace top-bar class dropdown with left sidebar list
+- [ ] Fix detail strip cells: empty Notiz and empty Datum show "—" instead of blank
+- [ ] Add chevron (▶ / ▼) to student name cells so expandability is obvious
+- [ ] Add text labels to icon-only controls (e.g. ⚙ gear button)
+- [ ] Every actionable element permanently visible — no hiding behind ⋯ menus or hover
+- [ ] Replace ⋯ button with explicit "Bearbeiten" text button per student row
+- [ ] Strict color hierarchy: one primary accent, never repurposed
+- [ ] Make the two "save preset" buttons in the weight panel visually separate
+- [ ] Visible confirmation after "Speichern" for grades and weight changes
+- [ ] Add confirmation step before all destructive actions
 - [ ] Plain language audit (no technical terms anywhere)
-- [ ] Better cue that leads naturally to grade adding
-- [ ] Add text labels to icon-only controls (e.g. ⚙ gear button) so users know what they're clicking
-- [ ] Don't rely on discoverability through exploration — every actionable element must be permanently visible, not hidden behind hover or ⋯ menus
-- [ ] Make the two "save preset" buttons in the weight panel visually separate (currently they sit close together and look like one group)
-- [ ] Show visible confirmation after clicking "Speichern" for grades and weight changes (brief success state on the button or a toast)
-- [ ] Add confirmation step before destructive actions (e.g. deleting an event, removing a student) — currently only some have dialogs
-- [ ] Replace ⋯ button with explicit "Bearbeiten" text button for edit/delete student actions
+- [ ] Better cue that leads naturally to grade entry
 
 ## Polish 
 - [ ] ? - Button next to the grade or more visible features that explains how grades can be typed in 
