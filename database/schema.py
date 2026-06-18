@@ -182,9 +182,9 @@ def _seed(conn) -> None:
         conn.executemany(
             "INSERT INTO weight_preset_weights (weight_preset_id, category_id, weight) VALUES (?, ?, ?)",
             [
-                (preset_id, cat_map["Exams"],    40.0),
-                (preset_id, cat_map["Oral"],     30.0),
-                (preset_id, cat_map["Homework"], 10.0),
-                (preset_id, cat_map["Quizzes"],  20.0),
+                (preset_id, cat_map["Schularbeiten"], 40.0),
+                (preset_id, cat_map["Mündlich"],      30.0),
+                (preset_id, cat_map["Hausübungen"],   10.0),
+                (preset_id, cat_map["Tests"],         20.0),
             ],
         )

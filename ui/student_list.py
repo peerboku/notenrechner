@@ -5,7 +5,7 @@ from database import course_configs, grades as grades_db
 from database.categories import get_all_categories
 from database.students import add_student
 from database.enrollments import add_enrollment, delete_enrollment, get_enrollments_by_filter
-from database.grade_events import add_event
+from database.grade_events import add_event, get_event as _get_event
 from calculation.grades import category_average, calculate_final_grade
 from calculation.grade_input import parse_grade_input, format_grade
 from i18n import t
@@ -15,6 +15,8 @@ from undo_actions import AddEventAction
 COL_NAME  = 200
 COL_CAT   =  90
 COL_FINAL =  90
+COL_NOTIZ = 130   # note column in the detail strip
+COL_DATUM = COL_NAME - COL_NOTIZ   # date column in the detail strip (= 70)
 
 _FINAL_COLOR       = ("#1a6fc4", "#5ba4f5")   # blue  — Final column
 _EDIT_ACTIVE_COLOR = ("#b85c00", "#ff9040")   # amber — active edit column
@@ -35,6 +37,9 @@ class StudentListPanel(ctk.CTkFrame):
         self._edit_inputs: list[tuple[int, object]] = []
         self._date_entry: ctk.CTkEntry | None = None
         self._note_entry: ctk.CTkEntry | None = None
+
+        # Expand/collapse state
+        self._expanded_eid: int | None = None
 
         self._build()
 
@@ -361,54 +366,211 @@ class StudentListPanel(ctk.CTkFrame):
             self._wire_navigation()
 
     def _build_row(self, enrollment, bg):
+        eid = enrollment["id"]
+        is_expanded = (eid == self._expanded_eid) and not self._edit_mode
+
+        grades = grades_db.get_grades(eid)
+        by_cat: dict[int, list[float]] = {}
+        for g in grades:
+            by_cat.setdefault(g["category_id"], []).append(g["value"])
+
         row = ctk.CTkFrame(self._scroll, fg_color=bg, corner_radius=0)
         row.pack(fill="x")
 
-        grades = grades_db.get_grades(enrollment["id"])
-        by_cat: dict[int, list[float]] = {}
-        by_cat_rows: dict[int, list] = {}
-        for g in grades:
-            by_cat.setdefault(g["category_id"], []).append(g["value"])
-            by_cat_rows.setdefault(g["category_id"], []).append(dict(g))
-
-        # Name cell — single click opens action menu
-        eid = enrollment["id"]
+        # Name cell — click toggles the detail strip
         name_lbl = ctk.CTkLabel(
             row, text=enrollment["student_name"], width=COL_NAME, anchor="w",
-            font=ctk.CTkFont(size=13), text_color=("gray10", "gray90"), cursor="hand2",
+            font=ctk.CTkFont(size=13), text_color=("gray10", "gray90"),
+            cursor="hand2" if not self._edit_mode else "",
         )
         name_lbl.pack(side="left", padx=(8, 0), pady=6)
-        name_lbl._label.bind("<Button-1>",
-                             lambda _e, i=eid: self._on_student_click(_e, i))
+        if not self._edit_mode:
+            name_lbl._label.bind("<Button-1>", lambda _e, i=eid: self._toggle_detail(i))
 
         for cat in self._active_cats:
+            cat = dict(cat)
             active = self._edit_mode and self._edit_cat and cat["id"] == self._edit_cat["id"]
             dim    = self._edit_mode and not active
 
             if active:
                 widget = _input_widget(row, cat)
-                self._edit_inputs.append((enrollment["id"], widget))
+                self._edit_inputs.append((eid, widget))
             else:
                 avg = category_average(by_cat.get(cat["id"], []))
-                cell_lbl = _cell(row, f"{avg:.1f}" if avg is not None else "—",
-                                 COL_CAT, dim=dim)
-                cat_rows = by_cat_rows.get(cat["id"])
-                if cat_rows and not self._edit_mode:
-                    value_to_label = None
-                    if cat["input_type"] == "discrete" and cat["discrete_values"]:
-                        value_to_label = {
-                            float(v): l for l, v in _discrete_pairs(cat)
-                        }
-                    _bind_grade_tooltip(cell_lbl, cat_rows, value_to_label)
+                _cell(row, f"{avg:.1f}" if avg is not None else "—", COL_CAT, dim=dim)
 
         _divider(row)
 
         try:
-            final = calculate_final_grade(enrollment["id"])
+            final = calculate_final_grade(eid)
         except ValueError:
             final = None
         _cell(row, str(final) if final is not None else "—", COL_FINAL,
               bold=True, final=True)
+
+        # ⋯ action menu button — far right, only in normal mode
+        if not self._edit_mode:
+            menu_btn = ctk.CTkButton(
+                row, text="⋯", width=28, height=28,
+                fg_color="transparent",
+                hover_color=("gray80", "gray30"),
+                font=ctk.CTkFont(size=15),
+                text_color=("gray40", "gray60"),
+            )
+            menu_btn.configure(
+                command=lambda b=menu_btn: self._show_action_menu(eid, b)
+            )
+            menu_btn.pack(side="right", padx=(0, 4))
+
+        if is_expanded:
+            self._build_detail_strip(grades, bg)
+
+    def _toggle_detail(self, eid: int):
+        self._expanded_eid = None if self._expanded_eid == eid else eid
+        self._rebuild_rows()
+
+    def _show_action_menu(self, enrollment_id: int, btn):
+        x = btn.winfo_rootx()
+        y = btn.winfo_rooty() + btn.winfo_height()
+        menu = tkinter.Menu(self, tearoff=0)
+        if self._on_view_grades:
+            menu.add_command(
+                label=t("view_grades"),
+                command=lambda: self._on_view_grades(enrollment_id),
+            )
+            menu.add_separator()
+        menu.add_command(
+            label=t("remove"),
+            foreground="red",
+            command=lambda: _ConfirmRemoveDialog(
+                self, enrollment_id, on_confirmed=self._rebuild_rows,
+            ),
+        )
+        try:
+            menu.tk_popup(x, y)
+        finally:
+            menu.grab_release()
+
+    def _build_detail_strip(self, grades, row_bg):
+        strip_bg = ("gray91", "gray15") if row_bg == ("gray96", "gray18") else ("gray85", "gray13")
+        strip = ctk.CTkFrame(self._scroll, fg_color=strip_bg, corner_radius=0)
+        strip.pack(fill="x")
+
+        if not grades:
+            return
+
+        active_cats = [dict(c) for c in self._active_cats]
+        vtl_maps: dict[int, dict[float, str]] = {}
+        for cat in active_cats:
+            if cat["input_type"] == "discrete" and cat["discrete_values"]:
+                vtl_maps[cat["id"]] = {float(v): lbl for lbl, v in _discrete_pairs(cat)}
+
+        # Load event info (note + date) for grades that belong to an event
+        event_cache: dict[int, dict] = {}
+        for g in grades:
+            ev_id = g["event_id"]
+            if ev_id and ev_id not in event_cache:
+                ev = _get_event(ev_id)
+                event_cache[ev_id] = dict(ev) if ev else {}
+
+        # Build one candidate row per event (or per individual grade).
+        # Grades from the same event share one row; individual grades each get one.
+        candidates: list[dict] = []
+        seen_keys: dict = {}
+        for g in grades:
+            ev_id = g["event_id"]
+            ev = event_cache.get(ev_id, {}) if ev_id else {}
+            eff_date = ev.get("date") or g["date"] or ""
+            note = ev.get("note") or g["note"] or ""
+            row_key = ev_id if ev_id else f"ind_{g['id']}"
+
+            if row_key not in seen_keys:
+                row = {"date": eff_date, "note": "", "by_cat": {}}
+                seen_keys[row_key] = row
+                candidates.append(row)
+
+            grp = seen_keys[row_key]
+            if note and not grp["note"]:
+                grp["note"] = note
+            cat_id = g["category_id"]
+            vtl = vtl_maps.get(cat_id)
+            raw = float(g["value"])
+            grp["by_cat"][cat_id] = vtl[raw] if vtl and raw in vtl else format_grade(raw)
+
+        # Merge candidate rows that share the same date and don't conflict on any category.
+        # Keeps the nice "all categories for one date in one row" view while still
+        # showing separate rows when the same category appears twice on the same date.
+        candidates.sort(key=lambda r: _date_sort_key(r["date"]), reverse=True)
+        rows: list[dict] = []
+        for cand in candidates:
+            merged = False
+            for existing in rows:
+                if existing["date"] == cand["date"]:
+                    if not any(cid in existing["by_cat"] for cid in cand["by_cat"]):
+                        existing["by_cat"].update(cand["by_cat"])
+                        if not existing["note"] and cand["note"]:
+                            existing["note"] = cand["note"]
+                        merged = True
+                        break
+            if not merged:
+                rows.append(dict(cand))
+
+        muted_c  = ("gray50", "gray55")
+        normal_c = ("gray10", "gray88")
+        header_c = ("gray45", "gray55")
+
+        # Header row: Notiz | Datum | [category names]
+        hdr = ctk.CTkFrame(strip, fg_color="transparent")
+        hdr.pack(fill="x", padx=8, pady=(4, 0))
+        ctk.CTkLabel(
+            hdr, text=t("note_label").rstrip(":"), width=COL_NOTIZ, anchor="w",
+            font=ctk.CTkFont(size=11), text_color=header_c,
+        ).pack(side="left")
+        ctk.CTkLabel(
+            hdr, text=t("date_label").rstrip(":"), width=COL_DATUM, anchor="e",
+            font=ctk.CTkFont(size=11), text_color=header_c,
+        ).pack(side="left", padx=(0, 4))
+        for cat in active_cats:
+            ctk.CTkLabel(
+                hdr, text=cat["name"], width=COL_CAT, anchor="center",
+                font=ctk.CTkFont(size=11), text_color=header_c,
+            ).pack(side="left")
+
+        ctk.CTkFrame(
+            strip, height=1, fg_color=("gray75", "gray28"), corner_radius=0,
+        ).pack(fill="x", padx=8, pady=(2, 2))
+
+        for ri, row_data in enumerate(rows):
+            if ri > 0:
+                ctk.CTkFrame(
+                    strip, height=1, fg_color=("gray82", "gray25"), corner_radius=0,
+                ).pack(fill="x", padx=8)
+
+            data_row = ctk.CTkFrame(strip, fg_color="transparent")
+            data_row.pack(fill="x", padx=8, pady=2)
+
+            note_text = row_data["note"]
+            ctk.CTkLabel(
+                data_row, text=note_text or "", width=COL_NOTIZ, anchor="w",
+                font=ctk.CTkFont(size=12),
+                text_color=normal_c if note_text else muted_c,
+            ).pack(side="left")
+
+            date_display = _short_date(row_data["date"]) if row_data["date"] else "—"
+            ctk.CTkLabel(
+                data_row, text=date_display, width=COL_DATUM, anchor="e",
+                font=ctk.CTkFont(size=12), text_color=muted_c,
+            ).pack(side="left", padx=(0, 4))
+
+            for cat in active_cats:
+                val = row_data["by_cat"].get(cat["id"], "")
+                ctk.CTkLabel(
+                    data_row, text=val, width=COL_CAT, anchor="center",
+                    font=ctk.CTkFont(size=12),
+                    text_color=normal_c if val else muted_c,
+                ).pack(side="left")
+
+        ctk.CTkFrame(strip, height=4, fg_color="transparent").pack()
 
     def _wire_navigation(self):
         """Bind Return on continuous entries to focus the next student's input."""
@@ -437,27 +599,6 @@ class StudentListPanel(ctk.CTkFrame):
         self._add_entry.delete(0, "end")
         self._rebuild_rows()
 
-    def _on_student_click(self, event, enrollment_id: int):
-        if self._edit_mode:
-            return
-        menu = tkinter.Menu(self, tearoff=0)
-        if self._on_view_grades:
-            menu.add_command(
-                label=t("view_grades"),
-                command=lambda: self._on_view_grades(enrollment_id),
-            )
-            menu.add_separator()
-        menu.add_command(
-            label=t("remove"),
-            foreground="red",
-            command=lambda: _ConfirmRemoveDialog(
-                self, enrollment_id, on_confirmed=self._rebuild_rows,
-            ),
-        )
-        try:
-            menu.tk_popup(event.x_root, event.y_root)
-        finally:
-            menu.grab_release()
 
 
 # ── Confirm save dialog ───────────────────────────────────────────────────────
@@ -602,6 +743,21 @@ def _wire_grade_entry_feedback(entry: ctk.CTkEntry) -> None:
     entry.bind("<FocusOut>", _on_focus_out)
 
 
+def _short_date(date_str: str) -> str:
+    """Trim "28.05.2026" → "28.05" for compact display in the detail strip."""
+    parts = date_str.split(".")
+    return f"{parts[0]}.{parts[1]}" if len(parts) >= 2 else date_str
+
+
+def _date_sort_key(date_str: str | None) -> str:
+    """Convert DD.MM.YYYY → YYYY-MM-DD for correct chronological string sort."""
+    if not date_str:
+        return ""
+    parts = date_str.split(".")
+    return f"{parts[2]}-{parts[1]}-{parts[0]}" if len(parts) == 3 else date_str
+
+
+
 def _header_cat_button(parent, cat, command):
     """Clickable category column header used in normal (non-edit) mode."""
     ctk.CTkButton(
@@ -658,60 +814,3 @@ def _cell(parent, text, width, anchor="center", bold=False, padx=(0, 0),
     return lbl
 
 
-def _bind_grade_tooltip(
-    widget: ctk.CTkLabel, grades: list[dict],
-    value_to_label: dict[float, str] | None = None,
-) -> None:
-    """Bind a hover popover showing grade entries (date + value) to a cell label.
-
-    For discrete categories, value_to_label maps numeric values back to the
-    teacher-facing symbols (e.g. 1.0 -> "+")."""
-    tip: list = [None]
-    after_id: list = [None]
-
-    def _show():
-        inner = widget._label
-        x = inner.winfo_rootx()
-        y = inner.winfo_rooty() + inner.winfo_height() + 4
-
-        lines = []
-        for g in grades:
-            val = g["value"]
-            if value_to_label and val in value_to_label:
-                val_str = value_to_label[val]
-            else:
-                val_str = format_grade(val)
-            date_str = g["date"] if g["date"] else "—"
-            lines.append(f"{date_str}   {val_str}")
-        text = "\n".join(lines)
-
-        is_dark = ctk.get_appearance_mode().lower() == "dark"
-        bg  = "#2b2b2b" if is_dark else "#f5f5f5"
-        fg  = "#e8e8e8" if is_dark else "#1a1a1a"
-
-        t = tkinter.Toplevel(widget)
-        t.overrideredirect(True)
-        t.wm_attributes("-topmost", True)
-        tkinter.Label(
-            t, text=text, bg=bg, fg=fg,
-            font=("Segoe UI", 11), padx=10, pady=6, justify="left",
-        ).pack()
-        t.geometry(f"+{x}+{y}")
-        tip[0] = t
-
-    def _on_enter(_e):
-        after_id[0] = widget._label.after(350, _show)
-
-    def _on_leave(_e):
-        if after_id[0]:
-            widget._label.after_cancel(after_id[0])
-            after_id[0] = None
-        if tip[0]:
-            try:
-                tip[0].destroy()
-            except Exception:
-                pass
-            tip[0] = None
-
-    widget._label.bind("<Enter>", _on_enter)
-    widget._label.bind("<Leave>", _on_leave)
