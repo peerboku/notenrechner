@@ -169,7 +169,7 @@ Multiple teachers interested — unhappy with existing software. Validated: clas
 ### Apple-like design pass (after flow rework)
 - [x] Light mode default: it was decided to keep dark mode
 - [x] Student list as hero element; weight/events panels visually recede (toggle buttons muted, panels compact)
-- [ ] "Einträge anzeigen" button sits alone with empty space next to it — needs a visual anchor or count always visible so it doesn't feel orphaned
+- [x] "Einträge anzeigen" button sits alone with empty space next to it — removed toggle, events list is now always visible with a static "Einträge" label + count
 - [ ] Strict color hierarchy: only one primary blue button visible at a time; blue currently does three jobs (toggle, save, enter grades) — decide on one primary action per context and demote the rest
 - [ ] Fix detail strip cells: empty Notiz and empty Datum show placeholder text instead of blank/dash (e.g. "—" or no cell at all)
 - [x] Weight panel sum: display as integer when it's a whole number (e.g. "100%" not "100.0%")

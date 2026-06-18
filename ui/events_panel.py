@@ -9,7 +9,6 @@ class EventsPanel(ctk.CTkFrame):
     def __init__(self, parent, on_event_deleted=None, **kwargs):
         super().__init__(parent, **kwargs)
         self._config_id: int | None = None
-        self._expanded = False
         self._on_event_deleted = on_event_deleted
 
         self._build_header()
@@ -21,14 +20,12 @@ class EventsPanel(ctk.CTkFrame):
         header = ctk.CTkFrame(self, fg_color="transparent")
         header.pack(fill="x", padx=12, pady=(6, 0))
 
-        self._toggle_btn = ctk.CTkButton(
+        ctk.CTkLabel(
             header,
-            text=t("show_events"),
-            width=170, height=24,
+            text=t("hide_events"),
             font=ctk.CTkFont(size=11),
-            command=self._toggle,
-        )
-        self._toggle_btn.pack(side="left")
+            text_color=("gray45", "gray60"),
+        ).pack(side="left")
 
         self._count_label = ctk.CTkLabel(
             header,
@@ -36,27 +33,18 @@ class EventsPanel(ctk.CTkFrame):
             font=ctk.CTkFont(size=11),
             text_color=("gray50", "gray60"),
         )
-        self._count_label.pack(side="left", padx=(8, 0))
+        self._count_label.pack(side="left", padx=(6, 0))
 
-    # ── Collapsible body ──────────────────────────────────────────────────────
+    # ── Body (always visible) ─────────────────────────────────────────────────
 
     def _build_body(self):
         self._body = ctk.CTkFrame(self, fg_color="transparent")
-        # starts hidden
+        self._body.pack(fill="x", padx=12, pady=(6, 10))
 
         self._scroll = ctk.CTkScrollableFrame(
-            self._body, height=200, fg_color="transparent",
+            self._body, height=160, fg_color="transparent",
         )
         self._scroll.pack(fill="x")
-
-    def _toggle(self):
-        if self._expanded:
-            self._body.pack_forget()
-            self._toggle_btn.configure(text=t("show_events"))
-        else:
-            self._body.pack(fill="x", padx=12, pady=(6, 10))
-            self._toggle_btn.configure(text=t("hide_events"))
-        self._expanded = not self._expanded
 
     # ── Config loading ────────────────────────────────────────────────────────
 

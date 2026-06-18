@@ -64,7 +64,7 @@ _STRINGS = {
 
         # Events panel
         "show_events": "Show Entries",
-        "hide_events": "Hide Entries",
+        "hide_events": "Entries",
         "events_none": "(none)",
         "events_one": "(1 entry)",
         "events_many": "({count} entries)",
@@ -158,7 +158,7 @@ _STRINGS = {
 
         # Events panel
         "show_events": "Einträge anzeigen",
-        "hide_events": "Einträge ausblenden",
+        "hide_events": "Einträge",
         "events_none": "(keine)",
         "events_one": "(1 Eintrag)",
         "events_many": "({count} Einträge)",
