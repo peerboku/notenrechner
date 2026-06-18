@@ -172,13 +172,19 @@ Multiple teachers interested — unhappy with existing software. Validated: clas
 - [ ] "Einträge anzeigen" button sits alone with empty space next to it — needs a visual anchor or count always visible so it doesn't feel orphaned
 - [ ] Strict color hierarchy: only one primary blue button visible at a time; blue currently does three jobs (toggle, save, enter grades) — decide on one primary action per context and demote the rest
 - [ ] Fix detail strip cells: empty Notiz and empty Datum show placeholder text instead of blank/dash (e.g. "—" or no cell at all)
-- [ ] Weight panel sum: display as integer when it's a whole number (e.g. "100%" not "100.0%")
+- [x] Weight panel sum: display as integer when it's a whole number (e.g. "100%" not "100.0%")
 - [ ] Add chevron (▶ / ▼) to student name cells so it's obvious the row is expandable
-- [ ] Replace top-bar class dropdown with a left sidebar list — classes shown as a persistent list, selected class highlighted
+- [x] Replace top-bar class dropdown with a left sidebar list — classes shown as a persistent list, selected class highlighted
 - [ ] Student table: inset/grouped list style — rounded corners on the table, subtle row separators instead of alternating backgrounds
 - [ ] Fewer borders, more whitespace, card-style containers
 - [ ] Plain language audit (no technical terms anywhere)
 - [ ] Better cue that leads naturally to grade adding
+- [ ] Add text labels to icon-only controls (e.g. ⚙ gear button) so users know what they're clicking
+- [ ] Don't rely on discoverability through exploration — every actionable element must be permanently visible, not hidden behind hover or ⋯ menus
+- [ ] Make the two "save preset" buttons in the weight panel visually separate (currently they sit close together and look like one group)
+- [ ] Show visible confirmation after clicking "Speichern" for grades and weight changes (brief success state on the button or a toast)
+- [ ] Add confirmation step before destructive actions (e.g. deleting an event, removing a student) — currently only some have dialogs
+- [ ] Replace ⋯ button with explicit "Bearbeiten" text button for edit/delete student actions
 
 ## Polish 
 - [ ] ? - Button next to the grade or more visible features that explains how grades can be typed in 

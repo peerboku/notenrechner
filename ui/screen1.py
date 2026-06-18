@@ -5,19 +5,19 @@ from database import course_configs
 from i18n import t
 import undo_stack
 
+_SIDEBAR_W = 220
+
 
 class Screen1Frame(ctk.CTkFrame):
     def __init__(self, parent, app):
         super().__init__(parent, corner_radius=0, fg_color="transparent")
         self._app = app
         self._selected_config_id: int | None = None
-        self._config_map: dict[str, int] = {}
+        self._sidebar_btns: dict[int, ctk.CTkButton] = {}
 
         self._build_top_bar()
-        self._build_panels_row()
-        self._build_separator()
-        self._build_student_list()
-        self._refresh_class_selector()
+        self._build_body()
+        self._refresh_sidebar()
         self._bind_shortcuts()
 
     # ── Top bar ───────────────────────────────────────────────────────────────
@@ -29,7 +29,6 @@ class Screen1Frame(ctk.CTkFrame):
         inner = ctk.CTkFrame(bar, fg_color="transparent")
         inner.pack(fill="x", padx=16, pady=10)
 
-        # Right-side buttons — packed right-to-left, so gear ends up rightmost
         ctk.CTkButton(
             inner,
             text="⚙",
@@ -39,35 +38,133 @@ class Screen1Frame(ctk.CTkFrame):
             command=self._open_settings_modal,
         ).pack(side="right")
 
-        ctk.CTkLabel(inner, text=t("class_label"), font=ctk.CTkFont(size=13)).pack(
-            side="left", padx=(0, 8)
-        )
+        ctk.CTkLabel(
+            inner, text="Notenrechner",
+            font=ctk.CTkFont(size=15, weight="bold"),
+        ).pack(side="left")
 
-        self._class_var = ctk.StringVar(value=t("no_class_yet"))
-        self._class_menu = ctk.CTkComboBox(
-            inner,
-            variable=self._class_var,
-            values=[t("no_class_yet")],
-            command=self._on_class_selected,
-            width=300,
-            font=ctk.CTkFont(size=13),
+    # ── Body (sidebar + right content) ────────────────────────────────────────
+
+    def _build_body(self):
+        body = ctk.CTkFrame(self, fg_color="transparent", corner_radius=0)
+        body.pack(fill="both", expand=True)
+
+        self._build_sidebar(body)
+
+        ctk.CTkFrame(
+            body, width=1, fg_color=("gray65", "gray35"), corner_radius=0
+        ).pack(side="left", fill="y")
+
+        right = ctk.CTkFrame(body, fg_color="transparent", corner_radius=0)
+        right.pack(side="left", fill="both", expand=True)
+
+        self._build_panels_row(right)
+        self._build_separator(right)
+        self._build_student_list(right)
+
+    # ── Sidebar ───────────────────────────────────────────────────────────────
+
+    def _build_sidebar(self, parent):
+        sidebar = ctk.CTkFrame(
+            parent, width=_SIDEBAR_W,
+            fg_color=("gray84", "gray16"), corner_radius=0,
         )
-        self._class_menu.pack(side="left")
+        sidebar.pack(side="left", fill="y")
+        sidebar.pack_propagate(False)
+
+        self._sidebar_scroll = ctk.CTkScrollableFrame(
+            sidebar, fg_color="transparent", corner_radius=0,
+        )
+        self._sidebar_scroll.pack(fill="both", expand=True)
+
+        ctk.CTkFrame(
+            sidebar, height=1, fg_color=("gray70", "gray30"), corner_radius=0
+        ).pack(fill="x")
 
         ctk.CTkButton(
-            inner,
-            text=t("new_class"),
-            width=110,
+            sidebar,
+            text=f"+ {t('new_class')}",
+            height=36,
+            fg_color="transparent",
+            hover_color=("gray76", "gray26"),
+            text_color=("gray30", "gray70"),
+            font=ctk.CTkFont(size=12),
             command=self._open_new_class_modal,
-        ).pack(side="left", padx=(12, 0))
+        ).pack(fill="x", padx=6, pady=6)
+
+    def _refresh_sidebar(self, select_config_id: int | None = None):
+        for w in self._sidebar_scroll.winfo_children():
+            w.destroy()
+        self._sidebar_btns.clear()
+
+        configs = course_configs.get_all_configs()
+
+        if not configs:
+            ctk.CTkLabel(
+                self._sidebar_scroll,
+                text=t("no_class_yet"),
+                font=ctk.CTkFont(size=11),
+                text_color=("gray50", "gray55"),
+                wraplength=_SIDEBAR_W - 24,
+            ).pack(padx=12, pady=16)
+            self._selected_config_id = None
+            self._weight_panel.load_config(None)
+            self._events_panel.load_config(None)
+            self._student_list.load_config(None)
+            return
+
+        # Determine which config to select
+        all_ids = {cfg["id"] for cfg in configs}
+        target_id = select_config_id or self._selected_config_id
+        if target_id not in all_ids:
+            target_id = configs[0]["id"]
+
+        for cfg in configs:
+            cfg_id = cfg["id"]
+            label = f"{cfg['class']} · {cfg['course_name']} · {cfg['school_year_label']}"
+            is_sel = cfg_id == target_id
+
+            btn = ctk.CTkButton(
+                self._sidebar_scroll,
+                text=label,
+                anchor="w",
+                height=34,
+                fg_color=("#cce0ff", "#1f3a5f") if is_sel else "transparent",
+                hover_color=("gray78", "gray26"),
+                text_color=("gray10", "gray90"),
+                font=ctk.CTkFont(size=12, weight="bold" if is_sel else "normal"),
+                corner_radius=6,
+                command=lambda cid=cfg_id: self._select_config(cid),
+            )
+            btn.pack(fill="x", padx=6, pady=2)
+            self._sidebar_btns[cfg_id] = btn
+
+        self._select_config(target_id)
+
+    def _select_config(self, config_id: int):
+        # Update button highlight states
+        for cid, btn in self._sidebar_btns.items():
+            is_sel = cid == config_id
+            btn.configure(
+                fg_color=("#cce0ff", "#1f3a5f") if is_sel else "transparent",
+                font=ctk.CTkFont(size=12, weight="bold" if is_sel else "normal"),
+            )
+
+        if config_id == self._selected_config_id:
+            return
+
+        self._selected_config_id = config_id
+        self._weight_panel.load_config(config_id)
+        self._events_panel.load_config(config_id)
+        self._student_list.load_config(config_id)
 
     # ── Panels row (weights + events side by side) ────────────────────────────
 
-    def _build_panels_row(self):
+    def _build_panels_row(self, parent):
         from ui.weight_panel import WeightPanel
         from ui.events_panel import EventsPanel
 
-        row = ctk.CTkFrame(self, fg_color=("gray86", "gray18"), corner_radius=0)
+        row = ctk.CTkFrame(parent, fg_color=("gray86", "gray18"), corner_radius=0)
         row.pack(fill="x")
 
         self._weight_panel = WeightPanel(
@@ -90,56 +187,23 @@ class Screen1Frame(ctk.CTkFrame):
         )
         self._events_panel.pack(side="left", fill="both", expand=True)
 
-    def _build_separator(self):
+    def _build_separator(self, parent):
         ctk.CTkFrame(
-            self, height=2, fg_color=("gray65", "gray35"), corner_radius=0
+            parent, height=2, fg_color=("gray65", "gray35"), corner_radius=0
         ).pack(fill="x")
 
     # ── Student list ──────────────────────────────────────────────────────────
 
-    def _build_student_list(self):
+    def _build_student_list(self, parent):
         from ui.student_list import StudentListPanel
         self._student_list = StudentListPanel(
-            self,
+            parent,
             on_event_saved=self._on_event_saved,
             fg_color="transparent",
         )
         self._student_list.pack(fill="both", expand=True)
 
-    # ── Class selector ────────────────────────────────────────────────────────
-
-    def _refresh_class_selector(self, select_label: str | None = None):
-        configs = course_configs.get_all_configs()
-        self._config_map = {}
-
-        if not configs:
-            self._class_menu.configure(values=[t("no_class_yet")])
-            self._class_var.set(t("no_class_yet"))
-            self._selected_config_id = None
-            self._weight_panel.load_config(None)
-            self._events_panel.load_config(None)
-            self._student_list.load_config(None)
-            return
-
-        labels = []
-        for cfg in configs:
-            label = f"{cfg['class']} · {cfg['course_name']} · {cfg['school_year_label']}"
-            labels.append(label)
-            self._config_map[label] = cfg["id"]
-
-        self._class_menu.configure(values=labels)
-        target = select_label if select_label in self._config_map else labels[0]
-        self._class_var.set(target)
-        self._on_class_selected(target)
-
-    def _on_class_selected(self, label: str):
-        config_id = self._config_map.get(label)
-        if config_id is None:
-            return
-        self._selected_config_id = config_id
-        self._weight_panel.load_config(config_id)
-        self._events_panel.load_config(config_id)
-        self._student_list.load_config(config_id)
+    # ── Callbacks ─────────────────────────────────────────────────────────────
 
     def _on_weights_saved(self):
         self._student_list.refresh()
@@ -158,7 +222,7 @@ class Screen1Frame(ctk.CTkFrame):
         modal.grab_set()
 
     def _on_class_created(self, config_id: int, label: str):
-        self._refresh_class_selector(select_label=label)
+        self._refresh_sidebar(select_config_id=config_id)
 
     # ── Settings modal ────────────────────────────────────────────────────────
 
@@ -171,13 +235,12 @@ class Screen1Frame(ctk.CTkFrame):
     def _bind_shortcuts(self):
         self._app.bind("<Control-z>", self._undo)
         self._app.bind("<Control-y>", self._redo)
-        self._app.bind("<Control-Z>", self._redo)   # Ctrl+Shift+Z
+        self._app.bind("<Control-Z>", self._redo)
         if sys.platform == "darwin":
             self._app.bind("<Command-z>", self._undo)
-            self._app.bind("<Command-Z>", self._redo)  # Cmd+Shift+Z
+            self._app.bind("<Command-Z>", self._redo)
 
     def _undo(self, _event=None):
-        # Don't intercept when a text entry owns focus (let it handle its own undo)
         focused = self._app.focus_get()
         if isinstance(focused, tkinter.Entry):
             return
