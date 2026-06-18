@@ -1,5 +1,6 @@
 import tkinter
 import customtkinter as ctk
+from datetime import date as _date
 from database import course_configs, grades as grades_db
 from database.categories import get_all_categories
 from database.students import add_student
@@ -31,8 +32,9 @@ class StudentListPanel(ctk.CTkFrame):
         # Edit-mode state
         self._edit_mode = False
         self._edit_cat: dict | None = None
-        self._edit_event_data: dict | None = None
         self._edit_inputs: list[tuple[int, object]] = []
+        self._date_entry: ctk.CTkEntry | None = None
+        self._note_entry: ctk.CTkEntry | None = None
 
         self._build()
 
@@ -105,29 +107,58 @@ class StudentListPanel(ctk.CTkFrame):
     def _set_action_bar_normal(self):
         for w in self._action_bar.winfo_children():
             w.destroy()
-        self._add_event_btn = ctk.CTkButton(
-            self._action_bar, text=t("enter_grades"), width=130,
-            state="disabled",
-            command=self._open_add_event_modal,
-        )
-        self._add_event_btn.pack(side="left")
+        self._date_entry = None
+        self._note_entry = None
+        if self._config_id is not None:
+            ctk.CTkLabel(
+                self._action_bar,
+                text=t("header_click_hint"),
+                font=ctk.CTkFont(size=12),
+                text_color=("gray50", "gray55"),
+            ).pack(side="left")
 
     def _set_action_bar_edit(self):
         for w in self._action_bar.winfo_children():
             w.destroy()
+
+        # Left side: category name + date + note + notation hint
+        left = ctk.CTkFrame(self._action_bar, fg_color="transparent")
+        left.pack(side="left", fill="x", expand=True)
+
         ctk.CTkLabel(
-            self._action_bar,
+            left,
             text=t("editing", name=self._edit_cat["name"]),
             font=ctk.CTkFont(size=13, weight="bold"),
             text_color=_EDIT_ACTIVE_COLOR,
-        ).pack(side="left")
+        ).pack(side="left", padx=(0, 16))
+
+        ctk.CTkLabel(
+            left, text=t("date_label"),
+            font=ctk.CTkFont(size=12),
+        ).pack(side="left", padx=(0, 4))
+        self._date_entry = ctk.CTkEntry(left, width=110, font=ctk.CTkFont(size=12))
+        self._date_entry.insert(0, _date.today().strftime("%d.%m.%Y"))
+        self._date_entry.pack(side="left", padx=(0, 12))
+
+        ctk.CTkLabel(
+            left, text=t("note_label"),
+            font=ctk.CTkFont(size=12),
+        ).pack(side="left", padx=(0, 4))
+        self._note_entry = ctk.CTkEntry(
+            left, width=160, font=ctk.CTkFont(size=12),
+            placeholder_text=t("optional"),
+        )
+        self._note_entry.pack(side="left", padx=(0, 16))
+
         if self._edit_cat["input_type"] == "continuous":
             ctk.CTkLabel(
-                self._action_bar,
-                text=t("notation_hint"),
-                font=ctk.CTkFont(size=12),
-                text_color=("gray40", "gray60"),
-            ).pack(side="left", padx=(16, 0))
+                left,
+                text=t("notation_hint_short"),
+                font=ctk.CTkFont(size=11),
+                text_color=("gray50", "gray55"),
+            ).pack(side="left")
+
+        # Right side: cancel + save
         ctk.CTkButton(
             self._action_bar, text=t("cancel"),
             width=100, fg_color="transparent", border_width=1,
@@ -151,8 +182,8 @@ class StudentListPanel(ctk.CTkFrame):
         else:
             self._config_data = course_configs.get_config_by_id(config_id)
             self._active_cats = _active_categories(config_id)
-            self._add_event_btn.configure(state="normal")
         self._add_btn.configure(state="normal" if config_id is not None else "disabled")
+        self._set_action_bar_normal()
         self._rebuild_header()
         self._rebuild_rows()
 
@@ -164,16 +195,9 @@ class StudentListPanel(ctk.CTkFrame):
 
     # ── Edit mode ─────────────────────────────────────────────────────────────
 
-    def _open_add_event_modal(self):
-        from ui.add_event_modal import AddEventModal
-        if not self._active_cats:
-            return
-        AddEventModal(self, categories=self._active_cats, on_confirmed=self._enter_edit_mode)
-
-    def _enter_edit_mode(self, cat: dict, date: str | None, note: str | None):
+    def _enter_edit_mode(self, cat: dict):
         self._edit_mode = True
         self._edit_cat = dict(cat)
-        self._edit_event_data = {"date": date, "note": note}
         self._edit_inputs = []
         self._set_action_bar_edit()
         self._show_add_button()
@@ -194,7 +218,6 @@ class StudentListPanel(ctk.CTkFrame):
         self._set_action_bar_normal()
         self._bottom_bar.pack_forget()
         if self._config_id is not None:
-            self._add_event_btn.configure(state="normal")
             self._add_btn.configure(state="normal")
         self._rebuild_header()
         self._rebuild_rows()
@@ -237,8 +260,8 @@ class StudentListPanel(ctk.CTkFrame):
 
     def _do_save(self, entries: list[tuple[int, float | None]]):
         cat_id = self._edit_cat["id"]
-        date   = self._edit_event_data.get("date")
-        note   = self._edit_event_data.get("note")
+        date   = self._date_entry.get().strip() or None if self._date_entry else None
+        note   = self._note_entry.get().strip() or None if self._note_entry else None
 
         event_id = add_event(
             course_config_id=self._config_id,
@@ -287,8 +310,14 @@ class StudentListPanel(ctk.CTkFrame):
         for cat in self._active_cats:
             active = self._edit_mode and self._edit_cat and cat["id"] == self._edit_cat["id"]
             dim    = self._edit_mode and not active
-            _header_label(self._header_frame, cat["name"], COL_CAT,
-                          highlight=active, dim=dim)
+            if not self._edit_mode:
+                _header_cat_button(
+                    self._header_frame, cat,
+                    command=lambda c=dict(cat): self._enter_edit_mode(c),
+                )
+            else:
+                _header_label(self._header_frame, cat["name"], COL_CAT,
+                              highlight=active, dim=dim)
         _divider(self._header_frame)
         _header_label(self._header_frame, t("final_column"), COL_FINAL, final=True)
 
@@ -571,6 +600,21 @@ def _wire_grade_entry_feedback(entry: ctk.CTkEntry) -> None:
 
     entry.bind("<KeyRelease>", _on_key)
     entry.bind("<FocusOut>", _on_focus_out)
+
+
+def _header_cat_button(parent, cat, command):
+    """Clickable category column header used in normal (non-edit) mode."""
+    ctk.CTkButton(
+        parent,
+        text=cat["name"],
+        width=COL_CAT,
+        height=32,
+        fg_color="transparent",
+        hover_color=("gray78", "gray28"),
+        text_color=("gray10", "gray90"),
+        font=ctk.CTkFont(size=12, weight="bold"),
+        command=command,
+    ).pack(side="left", pady=2)
 
 
 def _divider(parent):
