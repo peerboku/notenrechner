@@ -170,6 +170,12 @@ Multiple teachers interested — unhappy with existing software. Validated: clas
 - [ ] Student list as hero element; weight/events panels visually recede
 - [ ] Fewer borders, more whitespace, card-style containers
 - [ ] Plain language audit (no technical terms anywhere)
+- [ ] Better cue that leads naturally to grade adding 
+
+## Polish 
+- [ ] ? - Button next to the grade or more visible features that explains how grades can be typed in 
+- [ ] Little tutorial with arrows when starting the app for first time
+- [ ] wenn kein Datum eingetragen ist, anstatt "-" Textblock "kein Datum eingetragen"
 
 ---
 
@@ -233,6 +239,7 @@ Multiple teachers interested — unhappy with existing software. Validated: clas
 - [ ] Add scrollable Lists with mouse/touchpad
 - [ ] App runs without terminal window on Windows
 - [ ] Test .exe on Windows machine
+
 
 ### Docs
 - [ ] README updated for new UI
