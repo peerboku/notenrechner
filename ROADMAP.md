@@ -170,7 +170,7 @@ Multiple teachers interested — unhappy with existing software. Validated: clas
 > Design goal shifted: audience is older teachers, not tech-savvy users. Drop iOS/Apple references. Aim for the look and feel of a paper gradebook — familiar, readable, no surprises.
 
 #### Design principles
-- [ ] **Grid lines, not cards** — visible borders and table rules everywhere; no shadow-only floating panels; the student list should look like a ruled table
+- [x] **Grid lines, not cards** — student list rebuilt as a ruled gradebook table: outer border, vertical rule between every column, horizontal rule between every row, heavy rule under the header band, flat rows (zebra striping removed); detail strip columns aligned to the same grid
 - [ ] **Warm muted palette** — replace dark mode with soft off-white or cream background; single calm accent color (navy or forest green); no pure white, no pure black
 - [ ] **One accent color, one purpose** — the accent is used identically everywhere for the same meaning (e.g. always forest green for the primary save action); never repurposed as a label color or decoration elsewhere; reduces relearning
 - [ ] **Persistent labeled navigation** — no icon-only nav, no hamburger menus; if there are multiple views, show them as visible text tabs at all times; sidebar class list already moves in this direction

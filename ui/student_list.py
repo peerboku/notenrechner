@@ -13,13 +13,20 @@ import undo_stack
 from undo_actions import AddEventAction
 
 COL_NAME  = 200
-COL_CAT   =  90
+COL_CAT   = 115   # wide enough for the longest default name ("Schularbeiten")
 COL_FINAL =  90
 COL_NOTIZ = 130   # note column in the detail strip
 COL_DATUM = COL_NAME - COL_NOTIZ   # date column in the detail strip (= 70)
 
 _FINAL_COLOR       = ("#1a6fc4", "#5ba4f5")   # blue  — Final column
 _EDIT_ACTIVE_COLOR = ("#b85c00", "#ff9040")   # amber — active edit column
+
+# Paper-gradebook palette: ruled lines instead of floating cards
+_GRID_LINE   = ("gray56", "gray34")   # thin rule between cells and rows
+_GRID_HEAVY  = ("gray42", "gray46")   # outer border + header/final rules
+_HEADER_BG   = ("gray82", "gray23")   # column-header band
+_ROW_BG      = ("gray96", "gray17")   # flat row "paper" (no zebra striping)
+_DETAIL_BG   = ("gray92", "gray14")   # expanded detail strip
 
 
 class StudentListPanel(ctk.CTkFrame):
@@ -51,15 +58,21 @@ class StudentListPanel(ctk.CTkFrame):
         self._action_bar.pack(fill="x", padx=16, pady=(12, 8))
         self._set_action_bar_normal()
 
-        # Column header
-        self._header_frame = ctk.CTkFrame(
-            self, fg_color=("gray85", "gray22"), corner_radius=0
+        # Ruled table (gradebook look): one bordered box holding header + rows
+        self._table = ctk.CTkFrame(
+            self, fg_color=_ROW_BG, corner_radius=0,
+            border_width=1, border_color=_GRID_HEAVY,
         )
-        self._header_frame.pack(fill="x", padx=16)
+        self._table.pack(fill="both", expand=True, padx=16, pady=(0, 4))
 
-        # Scrollable rows
-        self._scroll = ctk.CTkScrollableFrame(self, fg_color="transparent")
-        self._scroll.pack(fill="both", expand=True, padx=16, pady=(0, 4))
+        # Column-header band, closed by a heavy rule
+        self._header_frame = ctk.CTkFrame(self._table, fg_color=_HEADER_BG, corner_radius=0)
+        self._header_frame.pack(fill="x")
+        ctk.CTkFrame(self._table, height=2, fg_color=_GRID_HEAVY, corner_radius=0).pack(fill="x")
+
+        # Scrollable rows (the ruled paper)
+        self._scroll = ctk.CTkScrollableFrame(self._table, fg_color=_ROW_BG, corner_radius=0)
+        self._scroll.pack(fill="both", expand=True)
 
         # Bottom save bar (hidden until edit mode)
         self._bottom_bar = ctk.CTkFrame(self, fg_color="transparent")
@@ -315,6 +328,7 @@ class StudentListPanel(ctk.CTkFrame):
         for cat in self._active_cats:
             active = self._edit_mode and self._edit_cat and cat["id"] == self._edit_cat["id"]
             dim    = self._edit_mode and not active
+            _vline(self._header_frame)
             if not self._edit_mode:
                 _header_cat_button(
                     self._header_frame, cat,
@@ -323,7 +337,7 @@ class StudentListPanel(ctk.CTkFrame):
             else:
                 _header_label(self._header_frame, cat["name"], COL_CAT,
                               highlight=active, dim=dim)
-        _divider(self._header_frame)
+        _vline(self._header_frame, _GRID_HEAVY)
         _header_label(self._header_frame, t("final_column"), COL_FINAL, final=True)
 
     # ── Rows ──────────────────────────────────────────────────────────────────
@@ -358,9 +372,8 @@ class StudentListPanel(ctk.CTkFrame):
                 ).pack(pady=(14, 0))
             return
 
-        for i, enrollment in enumerate(enrollments):
-            bg = ("gray96", "gray18") if i % 2 == 0 else ("gray90", "gray16")
-            self._build_row(enrollment, bg)
+        for enrollment in enrollments:
+            self._build_row(enrollment, _ROW_BG)
 
         if self._edit_mode:
             self._wire_navigation()
@@ -392,6 +405,7 @@ class StudentListPanel(ctk.CTkFrame):
             active = self._edit_mode and self._edit_cat and cat["id"] == self._edit_cat["id"]
             dim    = self._edit_mode and not active
 
+            _vline(row)
             if active:
                 widget = _input_widget(row, cat)
                 self._edit_inputs.append((eid, widget))
@@ -399,7 +413,7 @@ class StudentListPanel(ctk.CTkFrame):
                 avg = category_average(by_cat.get(cat["id"], []))
                 _cell(row, f"{avg:.1f}" if avg is not None else "—", COL_CAT, dim=dim)
 
-        _divider(row)
+        _vline(row, _GRID_HEAVY)
 
         try:
             final = calculate_final_grade(eid)
@@ -423,7 +437,12 @@ class StudentListPanel(ctk.CTkFrame):
             menu_btn.pack(side="right", padx=(0, 4))
 
         if is_expanded:
-            self._build_detail_strip(grades, bg)
+            self._build_detail_strip(grades, _DETAIL_BG)
+
+        # Horizontal rule closing this row block (below any detail strip)
+        ctk.CTkFrame(
+            self._scroll, height=1, fg_color=_GRID_LINE, corner_radius=0
+        ).pack(fill="x")
 
     def _toggle_detail(self, eid: int):
         self._expanded_eid = None if self._expanded_eid == eid else eid
@@ -451,8 +470,7 @@ class StudentListPanel(ctk.CTkFrame):
         finally:
             menu.grab_release()
 
-    def _build_detail_strip(self, grades, row_bg):
-        strip_bg = ("gray91", "gray15") if row_bg == ("gray96", "gray18") else ("gray85", "gray13")
+    def _build_detail_strip(self, grades, strip_bg):
         strip = ctk.CTkFrame(self._scroll, fg_color=strip_bg, corner_radius=0)
         strip.pack(fill="x")
 
@@ -517,60 +535,34 @@ class StudentListPanel(ctk.CTkFrame):
 
         muted_c  = ("gray50", "gray55")
         normal_c = ("gray10", "gray88")
-        header_c = ("gray45", "gray55")
+        header_c = ("gray40", "gray60")
 
-        # Header row: Notiz | Datum | [category names]
-        hdr = ctk.CTkFrame(strip, fg_color="transparent")
-        hdr.pack(fill="x", padx=8, pady=(4, 0))
-        ctk.CTkLabel(
-            hdr, text=t("note_label").rstrip(":"), width=COL_NOTIZ, anchor="w",
-            font=ctk.CTkFont(size=11), text_color=header_c,
-        ).pack(side="left")
-        ctk.CTkLabel(
-            hdr, text=t("date_label").rstrip(":"), width=COL_DATUM, anchor="e",
-            font=ctk.CTkFont(size=11), text_color=header_c,
-        ).pack(side="left", padx=(0, 4))
-        for cat in active_cats:
-            ctk.CTkLabel(
-                hdr, text=cat["name"], width=COL_CAT, anchor="center",
-                font=ctk.CTkFont(size=11), text_color=header_c,
-            ).pack(side="left")
-
-        ctk.CTkFrame(
-            strip, height=1, fg_color=("gray75", "gray28"), corner_radius=0,
-        ).pack(fill="x", padx=8, pady=(2, 2))
+        # Header sub-row (Notiz | Datum | category names) — columns aligned with
+        # the main table so the grid lines line up under their headers
+        _detail_subrow(
+            strip,
+            t("note_label").rstrip(":"), t("date_label").rstrip(":"),
+            {c["id"]: c["name"] for c in active_cats}, active_cats,
+            note_color=header_c, date_color=header_c,
+            cat_color_fn=lambda _cid, _v: header_c,
+        )
+        ctk.CTkFrame(strip, height=1, fg_color=_GRID_LINE, corner_radius=0).pack(fill="x")
 
         for ri, row_data in enumerate(rows):
             if ri > 0:
                 ctk.CTkFrame(
-                    strip, height=1, fg_color=("gray82", "gray25"), corner_radius=0,
-                ).pack(fill="x", padx=8)
-
-            data_row = ctk.CTkFrame(strip, fg_color="transparent")
-            data_row.pack(fill="x", padx=8, pady=2)
+                    strip, height=1, fg_color=("gray85", "gray20"), corner_radius=0,
+                ).pack(fill="x")
 
             note_text = row_data["note"]
-            ctk.CTkLabel(
-                data_row, text=note_text or "", width=COL_NOTIZ, anchor="w",
-                font=ctk.CTkFont(size=12),
-                text_color=normal_c if note_text else muted_c,
-            ).pack(side="left")
-
             date_display = _short_date(row_data["date"]) if row_data["date"] else "—"
-            ctk.CTkLabel(
-                data_row, text=date_display, width=COL_DATUM, anchor="e",
-                font=ctk.CTkFont(size=12), text_color=muted_c,
-            ).pack(side="left", padx=(0, 4))
-
-            for cat in active_cats:
-                val = row_data["by_cat"].get(cat["id"], "")
-                ctk.CTkLabel(
-                    data_row, text=val, width=COL_CAT, anchor="center",
-                    font=ctk.CTkFont(size=12),
-                    text_color=normal_c if val else muted_c,
-                ).pack(side="left")
-
-        ctk.CTkFrame(strip, height=4, fg_color="transparent").pack()
+            vals = {c["id"]: row_data["by_cat"].get(c["id"], "") for c in active_cats}
+            _detail_subrow(
+                strip, note_text, date_display, vals, active_cats,
+                note_color=normal_c if note_text else muted_c,
+                date_color=muted_c,
+                cat_color_fn=lambda _cid, v: normal_c if v else muted_c,
+            )
 
     def _wire_navigation(self):
         """Bind Return on continuous entries to focus the next student's input."""
@@ -759,18 +751,25 @@ def _date_sort_key(date_str: str | None) -> str:
 
 
 def _header_cat_button(parent, cat, command):
-    """Clickable category column header used in normal (non-edit) mode."""
+    """Clickable category column header used in normal (non-edit) mode.
+
+    Wrapped in a fixed-width frame (pack_propagate off) so the button can't grow
+    to fit long text — that growth is what threw the column grid out of alignment.
+    """
+    cell = ctk.CTkFrame(parent, width=COL_CAT, height=33,
+                        fg_color="transparent", corner_radius=0)
+    cell.pack(side="left")
+    cell.pack_propagate(False)
     ctk.CTkButton(
-        parent,
+        cell,
         text=cat["name"],
-        width=COL_CAT,
-        height=32,
         fg_color="transparent",
-        hover_color=("gray78", "gray28"),
+        hover_color=("gray72", "gray30"),
         text_color=("gray10", "gray90"),
         font=ctk.CTkFont(size=12, weight="bold"),
+        corner_radius=0,
         command=command,
-    ).pack(side="left", pady=2)
+    ).pack(fill="both", expand=True)
 
 
 def _divider(parent):
@@ -778,6 +777,52 @@ def _divider(parent):
         parent, width=1, height=20, corner_radius=0,
         fg_color=("gray70", "gray35"),
     ).pack(side="left", padx=(8, 0))
+
+
+def _vline(parent, color=_GRID_LINE):
+    """Vertical grid rule spanning the full height of a table row.
+
+    height=1 (not the CTkFrame default of 200) so the row's labels determine its
+    height; fill="y" then stretches the rule to match.
+    """
+    ctk.CTkFrame(
+        parent, width=1, height=1, fg_color=color, corner_radius=0
+    ).pack(side="left", fill="y")
+
+
+def _hline(parent, color=_GRID_LINE, height=1):
+    """Horizontal grid rule spanning the full width."""
+    ctk.CTkFrame(
+        parent, height=height, fg_color=color, corner_radius=0
+    ).pack(fill="x")
+
+
+def _detail_subrow(parent, note_text, date_text, values_by_cid, active_cats,
+                   note_color, date_color, cat_color_fn):
+    """One ruled row of the expanded detail strip.
+
+    The Notiz (130) + Datum (70) cells together occupy exactly COL_NAME, so the
+    vertical rules and category cells line up pixel-for-pixel with the main table.
+    """
+    rowf = ctk.CTkFrame(parent, fg_color="transparent")
+    rowf.pack(fill="x")
+
+    ctk.CTkLabel(
+        rowf, text=note_text, width=COL_NOTIZ, anchor="w",
+        font=ctk.CTkFont(size=12), text_color=note_color,
+    ).pack(side="left", padx=(8, 0))
+    ctk.CTkLabel(
+        rowf, text=date_text, width=COL_DATUM, anchor="e",
+        font=ctk.CTkFont(size=12), text_color=date_color,
+    ).pack(side="left")
+
+    for cat in active_cats:
+        _vline(rowf)
+        val = values_by_cid.get(cat["id"], "")
+        ctk.CTkLabel(
+            rowf, text=val, width=COL_CAT, anchor="center",
+            font=ctk.CTkFont(size=12), text_color=cat_color_fn(cat["id"], val),
+        ).pack(side="left")
 
 
 def _header_label(parent, text, width, anchor="center", padx=(0, 0),
