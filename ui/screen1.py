@@ -4,6 +4,9 @@ import customtkinter as ctk
 from database import course_configs
 from i18n import t
 import undo_stack
+from theme import (
+    INK, INK_MUTED, LINE, LINE_HEAVY, PAPER_PANEL, HEADER_BAND, ACCENT_SUBTLE,
+)
 
 _SIDEBAR_W = 220
 
@@ -23,7 +26,7 @@ class Screen1Frame(ctk.CTkFrame):
     # ── Top bar ───────────────────────────────────────────────────────────────
 
     def _build_top_bar(self):
-        bar = ctk.CTkFrame(self, fg_color=("gray88", "gray17"), corner_radius=0)
+        bar = ctk.CTkFrame(self, fg_color=HEADER_BAND, corner_radius=0)
         bar.pack(fill="x")
 
         inner = ctk.CTkFrame(bar, fg_color="transparent")
@@ -34,6 +37,7 @@ class Screen1Frame(ctk.CTkFrame):
             text="⚙",
             width=48, height=48,
             fg_color="transparent",
+            text_color=INK, hover_color=ACCENT_SUBTLE,
             font=ctk.CTkFont(size=32),
             command=self._open_settings_modal,
         ).pack(side="right")
@@ -52,7 +56,7 @@ class Screen1Frame(ctk.CTkFrame):
         self._build_sidebar(body)
 
         ctk.CTkFrame(
-            body, width=1, fg_color=("gray65", "gray35"), corner_radius=0
+            body, width=1, fg_color=LINE_HEAVY, corner_radius=0
         ).pack(side="left", fill="y")
 
         right = ctk.CTkFrame(body, fg_color="transparent", corner_radius=0)
@@ -67,7 +71,7 @@ class Screen1Frame(ctk.CTkFrame):
     def _build_sidebar(self, parent):
         sidebar = ctk.CTkFrame(
             parent, width=_SIDEBAR_W,
-            fg_color=("gray84", "gray16"), corner_radius=0,
+            fg_color=PAPER_PANEL, corner_radius=0,
         )
         sidebar.pack(side="left", fill="y")
         sidebar.pack_propagate(False)
@@ -78,7 +82,7 @@ class Screen1Frame(ctk.CTkFrame):
         self._sidebar_scroll.pack(fill="both", expand=True)
 
         ctk.CTkFrame(
-            sidebar, height=1, fg_color=("gray70", "gray30"), corner_radius=0
+            sidebar, height=1, fg_color=LINE, corner_radius=0
         ).pack(fill="x")
 
         ctk.CTkButton(
@@ -86,8 +90,8 @@ class Screen1Frame(ctk.CTkFrame):
             text=f"+ {t('new_class')}",
             height=36,
             fg_color="transparent",
-            hover_color=("gray76", "gray26"),
-            text_color=("gray30", "gray70"),
+            hover_color=ACCENT_SUBTLE,
+            text_color=INK,
             font=ctk.CTkFont(size=12),
             command=self._open_new_class_modal,
         ).pack(fill="x", padx=6, pady=6)
@@ -104,7 +108,7 @@ class Screen1Frame(ctk.CTkFrame):
                 self._sidebar_scroll,
                 text=t("no_class_yet"),
                 font=ctk.CTkFont(size=11),
-                text_color=("gray50", "gray55"),
+                text_color=INK_MUTED,
                 wraplength=_SIDEBAR_W - 24,
             ).pack(padx=12, pady=16)
             self._selected_config_id = None
@@ -129,9 +133,9 @@ class Screen1Frame(ctk.CTkFrame):
                 text=label,
                 anchor="w",
                 height=34,
-                fg_color=("#cce0ff", "#1f3a5f") if is_sel else "transparent",
-                hover_color=("gray78", "gray26"),
-                text_color=("gray10", "gray90"),
+                fg_color=ACCENT_SUBTLE if is_sel else "transparent",
+                hover_color=HEADER_BAND,
+                text_color=INK,
                 font=ctk.CTkFont(size=12, weight="bold" if is_sel else "normal"),
                 corner_radius=6,
                 command=lambda cid=cfg_id: self._select_config(cid),
@@ -146,7 +150,7 @@ class Screen1Frame(ctk.CTkFrame):
         for cid, btn in self._sidebar_btns.items():
             is_sel = cid == config_id
             btn.configure(
-                fg_color=("#cce0ff", "#1f3a5f") if is_sel else "transparent",
+                fg_color=ACCENT_SUBTLE if is_sel else "transparent",
                 font=ctk.CTkFont(size=12, weight="bold" if is_sel else "normal"),
             )
 
@@ -164,7 +168,7 @@ class Screen1Frame(ctk.CTkFrame):
         from ui.weight_panel import WeightPanel
         from ui.events_panel import EventsPanel
 
-        row = ctk.CTkFrame(parent, fg_color=("gray86", "gray18"), corner_radius=0)
+        row = ctk.CTkFrame(parent, fg_color=PAPER_PANEL, corner_radius=0)
         row.pack(fill="x")
 
         self._weight_panel = WeightPanel(
@@ -176,7 +180,7 @@ class Screen1Frame(ctk.CTkFrame):
         self._weight_panel.pack(side="left", fill="both", expand=True)
 
         ctk.CTkFrame(
-            row, width=1, fg_color=("gray75", "gray30"), corner_radius=0
+            row, width=1, fg_color=LINE, corner_radius=0
         ).pack(side="left", fill="y")
 
         self._events_panel = EventsPanel(
@@ -189,7 +193,7 @@ class Screen1Frame(ctk.CTkFrame):
 
     def _build_separator(self, parent):
         ctk.CTkFrame(
-            parent, height=2, fg_color=("gray65", "gray35"), corner_radius=0
+            parent, height=2, fg_color=LINE_HEAVY, corner_radius=0
         ).pack(fill="x")
 
     # ── Student list ──────────────────────────────────────────────────────────

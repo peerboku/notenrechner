@@ -1,6 +1,7 @@
 import customtkinter as ctk
 from i18n import t
 from database.weight_presets import get_all_presets, rename_preset, delete_preset
+from theme import INK, INK_MUTED, ACCENT_SUBTLE, DANGER, DANGER_HOVER
 
 
 class SettingsModal(ctk.CTkToplevel):
@@ -41,7 +42,7 @@ class SettingsModal(ctk.CTkToplevel):
             ctk.CTkLabel(
                 self._preset_frame,
                 text=t("no_presets_hint"),
-                text_color=("gray50", "gray60"),
+                text_color=INK_MUTED,
                 font=ctk.CTkFont(size=13),
             ).pack(pady=10, anchor="w")
             return
@@ -61,6 +62,7 @@ class SettingsModal(ctk.CTkToplevel):
         ctk.CTkButton(
             row, text=t("rename"), width=100, height=26,
             fg_color="transparent", border_width=1,
+            text_color=INK, hover_color=ACCENT_SUBTLE,
             font=ctk.CTkFont(size=11),
             command=lambda p=preset: _RenameDialog(self, p, self._refresh_presets),
         ).pack(side="right", padx=(6, 0))
@@ -69,8 +71,8 @@ class SettingsModal(ctk.CTkToplevel):
             row, text=t("delete"), width=80, height=26,
             fg_color="transparent", border_width=1,
             font=ctk.CTkFont(size=11),
-            text_color=("red4", "red3"),
-            border_color=("red4", "red3"),
+            text_color=DANGER,
+            border_color=DANGER,
             command=lambda p=preset: _ConfirmDeleteDialog(self, p, self._refresh_presets),
         ).pack(side="right")
 
@@ -100,7 +102,7 @@ class _RenameDialog(ctk.CTkToplevel):
         self._entry.focus()
         self._entry.bind("<Return>", lambda _: self._submit())
 
-        self._error = ctk.CTkLabel(self, text="", text_color="red", height=20)
+        self._error = ctk.CTkLabel(self, text="", text_color=DANGER, height=20)
         self._error.pack(pady=(4, 0))
 
         btn_row = ctk.CTkFrame(self, fg_color="transparent")
@@ -108,6 +110,7 @@ class _RenameDialog(ctk.CTkToplevel):
         ctk.CTkButton(
             btn_row, text=t("cancel"),
             fg_color="transparent", border_width=1,
+            text_color=INK, hover_color=ACCENT_SUBTLE,
             command=self.destroy,
         ).pack(side="left")
         ctk.CTkButton(btn_row, text=t("rename"), command=self._submit).pack(side="right")
@@ -148,12 +151,13 @@ class _ConfirmDeleteDialog(ctk.CTkToplevel):
         ctk.CTkButton(
             btn_row, text=t("cancel"),
             fg_color="transparent", border_width=1,
+            text_color=INK, hover_color=ACCENT_SUBTLE,
             command=self.destroy,
         ).pack(side="left")
         ctk.CTkButton(
             btn_row, text=t("delete"),
-            fg_color=("red4", "red3"),
-            hover_color=("red3", "red2"),
+            fg_color=DANGER,
+            hover_color=DANGER_HOVER,
             command=self._confirm,
         ).pack(side="right")
 

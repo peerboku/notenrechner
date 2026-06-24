@@ -6,6 +6,7 @@ from database.weight_presets import (
 )
 from calculation.validation import validate_weights
 from i18n import t
+from theme import INK, INK_MUTED, ACCENT_SUBTLE, DANGER, OK
 
 
 class WeightPanel(ctk.CTkFrame):
@@ -33,8 +34,8 @@ class WeightPanel(ctk.CTkFrame):
             width=170, height=24,
             fg_color="transparent",
             border_width=0,
-            hover_color=("gray78", "gray28"),
-            text_color=("gray45", "gray60"),
+            hover_color=ACCENT_SUBTLE,
+            text_color=INK_MUTED,
             font=ctk.CTkFont(size=11),
             command=self._toggle,
         )
@@ -45,7 +46,7 @@ class WeightPanel(ctk.CTkFrame):
             header,
             text="",
             font=ctk.CTkFont(size=12),
-            text_color=("gray40", "gray60"),
+            text_color=INK_MUTED,
         )
         # Not packed yet — becomes visible only when the body is hidden
 
@@ -94,6 +95,7 @@ class WeightPanel(ctk.CTkFrame):
         self._save_preset_btn = ctk.CTkButton(
             bottom, text=t("save_as_preset"), width=210, height=30,
             fg_color="transparent", border_width=1,
+            text_color=INK, hover_color=ACCENT_SUBTLE,
             font=ctk.CTkFont(size=12),
             command=self._open_save_preset_dialog,
         )
@@ -208,14 +210,14 @@ class WeightPanel(ctk.CTkFrame):
         weights = self._read_entries()
 
         if not weights:
-            self._sum_label.configure(text=t("sum_empty"), text_color=("gray40", "gray60"))
+            self._sum_label.configure(text=t("sum_empty"), text_color=INK_MUTED)
             self._save_btn.configure(state="disabled")
             self._save_preset_btn.pack_forget()
             return
 
         total = sum(weights.values())
         valid = validate_weights(weights)
-        color = ("green3", "green2") if valid else ("red3", "red2")
+        color = OK if valid else DANGER
         total_str = str(int(total)) if total == int(total) else f"{total:.1f}"
         self._sum_label.configure(text=t("sum_value", total=total_str), text_color=color)
         self._save_btn.configure(state="normal" if valid else "disabled")
@@ -281,7 +283,7 @@ class SavePresetDialog(ctk.CTkToplevel):
         self._name_entry.focus()
         self._name_entry.bind("<Return>", lambda _: self._submit())
 
-        self._error_label = ctk.CTkLabel(self, text="", text_color="red", height=22)
+        self._error_label = ctk.CTkLabel(self, text="", text_color=DANGER, height=22)
         self._error_label.pack(pady=(4, 0))
 
         btn_row = ctk.CTkFrame(self, fg_color="transparent")
@@ -289,6 +291,7 @@ class SavePresetDialog(ctk.CTkToplevel):
         ctk.CTkButton(
             btn_row, text=t("cancel"),
             fg_color="transparent", border_width=1,
+            text_color=INK, hover_color=ACCENT_SUBTLE,
             command=self.destroy,
         ).pack(side="left")
         ctk.CTkButton(btn_row, text=t("save"), command=self._submit).pack(side="right")

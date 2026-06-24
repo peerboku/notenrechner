@@ -3,6 +3,7 @@ import undo_stack
 from i18n import t
 from database.grade_events import get_events_with_category, delete_event
 from database.grades import delete_grades_by_event
+from theme import INK, INK_MUTED, ACCENT_SUBTLE, DANGER, DANGER_HOVER
 
 
 class EventsPanel(ctk.CTkFrame):
@@ -24,14 +25,14 @@ class EventsPanel(ctk.CTkFrame):
             header,
             text=t("hide_events"),
             font=ctk.CTkFont(size=11),
-            text_color=("gray45", "gray60"),
+            text_color=INK_MUTED,
         ).pack(side="left")
 
         self._count_label = ctk.CTkLabel(
             header,
             text="",
             font=ctk.CTkFont(size=11),
-            text_color=("gray50", "gray60"),
+            text_color=INK_MUTED,
         )
         self._count_label.pack(side="left", padx=(6, 0))
 
@@ -74,7 +75,7 @@ class EventsPanel(ctk.CTkFrame):
                 self._scroll,
                 text=t("no_events"),
                 font=ctk.CTkFont(size=12),
-                text_color=("gray50", "gray60"),
+                text_color=INK_MUTED,
                 anchor="w",
             ).pack(fill="x", pady=4)
             return
@@ -107,9 +108,9 @@ class EventsPanel(ctk.CTkFrame):
             fg_color="transparent",
             border_width=1,
             font=ctk.CTkFont(size=11),
-            text_color=("red4", "red3"),
-            border_color=("red4", "red3"),
-            hover_color=("misty rose", "gray25"),
+            text_color=DANGER,
+            border_color=DANGER,
+            hover_color=("#EAD6D6", "#3A2424"),
             command=lambda eid=ev["id"], lbl=label_text: self._confirm_delete(eid, lbl),
         ).pack(side="right")
 
@@ -155,7 +156,7 @@ class _ConfirmDeleteEventDialog(ctk.CTkToplevel):
             self,
             text=label,
             font=ctk.CTkFont(size=12),
-            text_color=("gray40", "gray60"),
+            text_color=INK_MUTED,
             wraplength=330,
         ).pack(padx=24)
 
@@ -163,7 +164,7 @@ class _ConfirmDeleteEventDialog(ctk.CTkToplevel):
             self,
             text=t("cannot_be_undone"),
             font=ctk.CTkFont(size=11),
-            text_color=("red4", "red3"),
+            text_color=DANGER,
         ).pack(pady=(6, 16))
 
         btn_row = ctk.CTkFrame(self, fg_color="transparent")
@@ -174,14 +175,15 @@ class _ConfirmDeleteEventDialog(ctk.CTkToplevel):
             text=t("cancel"),
             fg_color="transparent",
             border_width=1,
+            text_color=INK, hover_color=ACCENT_SUBTLE,
             command=self.destroy,
         ).pack(side="left")
 
         ctk.CTkButton(
             btn_row,
             text=t("delete"),
-            fg_color=("red4", "red3"),
-            hover_color=("red3", "red2"),
+            fg_color=DANGER,
+            hover_color=DANGER_HOVER,
             command=self._confirm,
         ).pack(side="right")
 

@@ -18,15 +18,18 @@ COL_FINAL =  90
 COL_NOTIZ = 130   # note column in the detail strip
 COL_DATUM = COL_NAME - COL_NOTIZ   # date column in the detail strip (= 70)
 
-_FINAL_COLOR       = ("#1a6fc4", "#5ba4f5")   # blue  — Final column
-_EDIT_ACTIVE_COLOR = ("#b85c00", "#ff9040")   # amber — active edit column
-
-# Paper-gradebook palette: ruled lines instead of floating cards
-_GRID_LINE   = ("gray56", "gray34")   # thin rule between cells and rows
-_GRID_HEAVY  = ("gray42", "gray46")   # outer border + header/final rules
-_HEADER_BG   = ("gray82", "gray23")   # column-header band
-_ROW_BG      = ("gray96", "gray17")   # flat row "paper" (no zebra striping)
-_DETAIL_BG   = ("gray92", "gray14")   # expanded detail strip
+from theme import (
+    INK, INK_MUTED,
+    LINE as _GRID_LINE,         # thin rule between cells and rows
+    LINE_HEAVY as _GRID_HEAVY,  # outer border + header/final rules
+    HEADER_BAND as _HEADER_BG,  # column-header band
+    PAPER_ROW as _ROW_BG,       # flat row "paper" (no zebra striping)
+    DETAIL_BG as _DETAIL_BG,    # expanded detail strip
+    ACCENT as _FINAL_COLOR,     # navy — the Endnote column
+    ACCENT_SUBTLE,
+    EDIT_ACTIVE as _EDIT_ACTIVE_COLOR,
+    DANGER, DANGER_HOVER,
+)
 
 
 class StudentListPanel(ctk.CTkFrame):
@@ -80,6 +83,7 @@ class StudentListPanel(ctk.CTkFrame):
         ctk.CTkButton(
             self._bottom_bar, text=t("cancel"),
             width=100, fg_color="transparent", border_width=1,
+            text_color=INK, hover_color=ACCENT_SUBTLE,
             command=self._cancel_edit,
         ).pack(side="right", padx=(8, 0))
         ctk.CTkButton(
@@ -94,6 +98,7 @@ class StudentListPanel(ctk.CTkFrame):
         self._add_btn = ctk.CTkButton(
             self._add_row, text=t("add_student"), width=COL_NAME,
             fg_color="transparent", border_width=1,
+            text_color=INK, hover_color=ACCENT_SUBTLE,
             state="disabled",
             command=self._show_add_entry,
         )
@@ -132,7 +137,7 @@ class StudentListPanel(ctk.CTkFrame):
                 self._action_bar,
                 text=t("header_click_hint"),
                 font=ctk.CTkFont(size=12),
-                text_color=("gray50", "gray55"),
+                text_color=INK_MUTED,
             ).pack(side="left")
 
     def _set_action_bar_edit(self):
@@ -173,13 +178,14 @@ class StudentListPanel(ctk.CTkFrame):
                 left,
                 text=t("notation_hint_short"),
                 font=ctk.CTkFont(size=11),
-                text_color=("gray50", "gray55"),
+                text_color=INK_MUTED,
             ).pack(side="left")
 
         # Right side: cancel + save
         ctk.CTkButton(
             self._action_bar, text=t("cancel"),
             width=100, fg_color="transparent", border_width=1,
+            text_color=INK, hover_color=ACCENT_SUBTLE,
             command=self._cancel_edit,
         ).pack(side="right", padx=(8, 0))
         ctk.CTkButton(
@@ -362,7 +368,7 @@ class StudentListPanel(ctk.CTkFrame):
             ctk.CTkLabel(
                 empty,
                 text=t("no_students"),
-                text_color=("gray50", "gray60"),
+                text_color=INK_MUTED,
                 font=ctk.CTkFont(size=14),
             ).pack()
             if not self._edit_mode:
@@ -393,7 +399,7 @@ class StudentListPanel(ctk.CTkFrame):
         # Name cell — click toggles the detail strip
         name_lbl = ctk.CTkLabel(
             row, text=enrollment["student_name"], width=COL_NAME, anchor="w",
-            font=ctk.CTkFont(size=13), text_color=("gray10", "gray90"),
+            font=ctk.CTkFont(size=13), text_color=INK,
             cursor="hand2" if not self._edit_mode else "",
         )
         name_lbl.pack(side="left", padx=(8, 0), pady=6)
@@ -427,9 +433,9 @@ class StudentListPanel(ctk.CTkFrame):
             menu_btn = ctk.CTkButton(
                 row, text="⋯", width=28, height=28,
                 fg_color="transparent",
-                hover_color=("gray80", "gray30"),
+                hover_color=ACCENT_SUBTLE,
                 font=ctk.CTkFont(size=15),
-                text_color=("gray40", "gray60"),
+                text_color=INK_MUTED,
             )
             menu_btn.configure(
                 command=lambda b=menu_btn: self._show_action_menu(eid, b)
@@ -460,7 +466,7 @@ class StudentListPanel(ctk.CTkFrame):
             menu.add_separator()
         menu.add_command(
             label=t("remove"),
-            foreground="red",
+            foreground=DANGER[0],
             command=lambda: _ConfirmRemoveDialog(
                 self, enrollment_id, on_confirmed=self._rebuild_rows,
             ),
@@ -533,9 +539,9 @@ class StudentListPanel(ctk.CTkFrame):
             if not merged:
                 rows.append(dict(cand))
 
-        muted_c  = ("gray50", "gray55")
-        normal_c = ("gray10", "gray88")
-        header_c = ("gray40", "gray60")
+        muted_c  = INK_MUTED
+        normal_c = INK
+        header_c = INK_MUTED
 
         # Header sub-row (Notiz | Datum | category names) — columns aligned with
         # the main table so the grid lines line up under their headers
@@ -551,7 +557,7 @@ class StudentListPanel(ctk.CTkFrame):
         for ri, row_data in enumerate(rows):
             if ri > 0:
                 ctk.CTkFrame(
-                    strip, height=1, fg_color=("gray85", "gray20"), corner_radius=0,
+                    strip, height=1, fg_color=_GRID_LINE, corner_radius=0,
                 ).pack(fill="x")
 
             note_text = row_data["note"]
@@ -620,6 +626,7 @@ class _ConfirmSaveDialog(ctk.CTkToplevel):
         ctk.CTkButton(
             btn_row, text=t("cancel"),
             fg_color="transparent", border_width=1,
+            text_color=INK, hover_color=ACCENT_SUBTLE,
             command=self.destroy,
         ).pack(side="left")
         ctk.CTkButton(
@@ -658,12 +665,13 @@ class _ConfirmRemoveDialog(ctk.CTkToplevel):
         ctk.CTkButton(
             btn_row, text=t("cancel"),
             fg_color="transparent", border_width=1,
+            text_color=INK, hover_color=ACCENT_SUBTLE,
             command=self.destroy,
         ).pack(side="left")
         ctk.CTkButton(
             btn_row, text=t("remove"),
-            fg_color=("red4", "red3"),
-            hover_color=("red3", "red2"),
+            fg_color=DANGER,
+            hover_color=DANGER_HOVER,
             command=self._confirm,
         ).pack(side="right")
 
@@ -720,7 +728,7 @@ def _wire_grade_entry_feedback(entry: ctk.CTkEntry) -> None:
     def _on_key(_e):
         text = entry.get().strip()
         invalid = bool(text) and parse_grade_input(text) is None
-        entry.configure(border_color=("red3", "red2") if invalid else default_border)
+        entry.configure(border_color=DANGER if invalid else default_border)
 
     def _on_focus_out(_e):
         text = entry.get().strip()
@@ -764,8 +772,8 @@ def _header_cat_button(parent, cat, command):
         cell,
         text=cat["name"],
         fg_color="transparent",
-        hover_color=("gray72", "gray30"),
-        text_color=("gray10", "gray90"),
+        hover_color=ACCENT_SUBTLE,
+        text_color=INK,
         font=ctk.CTkFont(size=12, weight="bold"),
         corner_radius=0,
         command=command,
@@ -775,7 +783,7 @@ def _header_cat_button(parent, cat, command):
 def _divider(parent):
     ctk.CTkFrame(
         parent, width=1, height=20, corner_radius=0,
-        fg_color=("gray70", "gray35"),
+        fg_color=_GRID_LINE,
     ).pack(side="left", padx=(8, 0))
 
 
@@ -830,11 +838,11 @@ def _header_label(parent, text, width, anchor="center", padx=(0, 0),
     if highlight:
         color = _EDIT_ACTIVE_COLOR
     elif dim:
-        color = ("gray60", "gray50")
+        color = INK_MUTED
     elif final:
         color = _FINAL_COLOR
     else:
-        color = ("gray10", "gray90")
+        color = INK
     ctk.CTkLabel(
         parent, text=text, width=width, anchor=anchor,
         font=ctk.CTkFont(size=12, weight="bold"),
@@ -845,11 +853,11 @@ def _header_label(parent, text, width, anchor="center", padx=(0, 0),
 def _cell(parent, text, width, anchor="center", bold=False, padx=(0, 0),
           final=False, dim=False) -> ctk.CTkLabel:
     if dim:
-        color = ("gray60", "gray50")
+        color = INK_MUTED
     elif final:
         color = _FINAL_COLOR
     else:
-        color = ("gray10", "gray90")
+        color = INK
     lbl = ctk.CTkLabel(
         parent, text=text, width=width, anchor=anchor,
         font=ctk.CTkFont(size=13, weight="bold" if bold else "normal"),

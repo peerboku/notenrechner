@@ -171,8 +171,8 @@ Multiple teachers interested — unhappy with existing software. Validated: clas
 
 #### Design principles
 - [x] **Grid lines, not cards** — student list rebuilt as a ruled gradebook table: outer border, vertical rule between every column, horizontal rule between every row, heavy rule under the header band, flat rows (zebra striping removed); detail strip columns aligned to the same grid
-- [ ] **Warm muted palette** — replace dark mode with soft off-white or cream background; single calm accent color (navy or forest green); no pure white, no pure black
-- [ ] **One accent color, one purpose** — the accent is used identically everywhere for the same meaning (e.g. always forest green for the primary save action); never repurposed as a label color or decoration elsewhere; reduces relearning
+- [x] **Warm muted palette** — switched to light "paper" mode; cream surfaces (#F4EFE4 etc.), ink text, navy accent. Central `theme.py` holds the palette and pushes it into CustomTkinter's ThemeManager at startup (recolors all default buttons/entries/dropdowns/scrollbars). No pure white/black.
+- [x] **One accent color, one purpose** — navy (#1E3A5F) is the single accent: primary buttons, the Endnote column, the selected class in the sidebar. Never reused as a label/decoration color. Destructive actions use a distinct muted red (DANGER); valid-sum feedback uses a muted green (OK); the in-progress edit column uses amber (transient state, not the accent).
 - [ ] **Persistent labeled navigation** — no icon-only nav, no hamburger menus; if there are multiple views, show them as visible text tabs at all times; sidebar class list already moves in this direction
 - [ ] **Predictable button placement** — Save always in the same corner, Cancel always in the same spot across every screen and modal; older users build spatial memory faster than icon/concept memory
 

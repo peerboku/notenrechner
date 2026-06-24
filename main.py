@@ -5,8 +5,11 @@ import os
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, BASE_DIR)
 
-ctk.set_appearance_mode("dark")
-ctk.set_default_color_theme("blue")
+import theme
+
+ctk.set_appearance_mode("light")        # warm "paper" mode (dark may become an option later)
+ctk.set_default_color_theme("blue")     # base structure; recolored to navy/cream below
+theme.apply_theme()
 
 
 class App(ctk.CTk):

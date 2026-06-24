@@ -3,6 +3,7 @@ from i18n import t
 from database import course_configs
 from database.courses import get_or_create_course
 from database.school_years import get_or_create_school_year
+from theme import INK, ACCENT_SUBTLE, DANGER
 
 
 class NewClassModal(ctk.CTkToplevel):
@@ -37,7 +38,7 @@ class NewClassModal(ctk.CTkToplevel):
             entry.grid(row=row_idx, column=1, sticky="ew", pady=6)
             setattr(self, attr, entry)
 
-        self._error_label = ctk.CTkLabel(self, text="", text_color="red", height=22)
+        self._error_label = ctk.CTkLabel(self, text="", text_color=DANGER, height=22)
         self._error_label.pack(pady=(8, 0))
 
         btn_row = ctk.CTkFrame(self, fg_color="transparent")
@@ -46,6 +47,7 @@ class NewClassModal(ctk.CTkToplevel):
         ctk.CTkButton(
             btn_row, text=t("cancel"),
             fg_color="transparent", border_width=1,
+            text_color=INK, hover_color=ACCENT_SUBTLE,
             command=self.destroy,
         ).pack(side="left")
         ctk.CTkButton(
